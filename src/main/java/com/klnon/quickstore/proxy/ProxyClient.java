@@ -1,13 +1,13 @@
-package com.ekincan.quickstore.proxy;
+package com.klnon.quickstore.proxy;
 
 import java.awt.Color;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.ekincan.quickstore.config.StoreConfig;
-import com.ekincan.quickstore.container.ContainerInformation;
-import com.ekincan.quickstore.QuickStore;
+import com.klnon.quickstore.config.StoreConfig;
+import com.klnon.quickstore.container.ContainerInformation;
+import com.klnon.quickstore.QuickStore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;

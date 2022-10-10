@@ -1,15 +1,14 @@
-package com.ekincan.quickstore;
+package com.klnon.quickstore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ekincan.quickstore.command.QuickStoreCommand;
-import com.ekincan.quickstore.config.StoreConfig;
-import com.ekincan.quickstore.container.ContainerInformation;
-import com.ekincan.quickstore.proxy.Proxy;
-import net.minecraft.command.ICommand;
+import com.klnon.quickstore.command.QuickStoreCommand;
+import com.klnon.quickstore.config.StoreConfig;
+import com.klnon.quickstore.container.ContainerInformation;
+import com.klnon.quickstore.proxy.Proxy;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;

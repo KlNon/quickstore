@@ -1,4 +1,4 @@
-package com.ekincan.quickstore.config;
+package com.klnon.quickstore.config;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;

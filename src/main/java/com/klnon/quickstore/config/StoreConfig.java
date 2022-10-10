@@ -1,4 +1,4 @@
-package com.ekincan.quickstore.config;
+package com.klnon.quickstore.config;
 
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;

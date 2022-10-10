@@ -1,19 +1,17 @@
-package com.ekincan.quickstore.command;
+package com.klnon.quickstore.command;
 
 import java.util.*;
 
-import com.ekincan.quickstore.QuickStore;
-import com.ekincan.quickstore.config.StoreConfig;
-import com.ekincan.quickstore.container.ContainerInformation;
+import com.klnon.quickstore.QuickStore;
+import com.klnon.quickstore.config.StoreConfig;
+import com.klnon.quickstore.container.ContainerInformation;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
