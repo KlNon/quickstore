@@ -1,0 +1,19 @@
+[
+    {
+        "modid": "quickstore",
+        "name": "Quickstore",
+        "description": "Quickly store items into surrounding chests",
+        "version": "1.4",
+        "mcversion": "${mcversion}",
+        "authorList": [
+            "KlNon"
+        ],
+        "url": "",
+        "updateUrl": "",
+        "authorList": [],
+        "credits": "",
+        "logoFile": "",
+        "screenshots": [],
+        "dependencies": []
+    }
+]

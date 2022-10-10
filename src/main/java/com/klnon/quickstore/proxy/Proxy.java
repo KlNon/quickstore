@@ -1,7 +1,7 @@
 package com.klnon.quickstore.proxy;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Tuple3d;
 
 public abstract class Proxy {
     public abstract void preInit();
@@ -12,7 +12,7 @@ public abstract class Proxy {
 
     public abstract void onWorldRenderLast();
 
-    public abstract EntityPlayer getPlayer();
+    public abstract PlayerEntity getPlayer();
 
     public abstract void sendCommand();
 
@@ -20,9 +20,9 @@ public abstract class Proxy {
 
     public abstract boolean isKeyDown();
 
-    public abstract void drawBoundingBox(Vec3d paramVec3d1, Vec3d paramVec3d2, Vec3d paramVec3d3, boolean paramBoolean, float paramFloat);
+    public abstract void drawBoundingBox(Tuple3d paramTuple3d1, Tuple3d paramTuple3d2, Tuple3d paramTuple3d3, boolean paramBoolean, float paramFloat);
 
-    public abstract void startDrawing(Vec3d paramVec3d);
+    public abstract void startDrawing(Tuple3d paramTuple3d);
 
     public abstract void endDrawing();
 }

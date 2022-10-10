@@ -10,9 +10,8 @@ import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.container.ContainerInformation;
 import com.klnon.quickstore.proxy.Proxy;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,13 +19,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
 //@Mod(modid = "quickstore", name = "QuickStore", version = "1.4", acceptedMinecraftVersions = "[1.12.2]", guiFactory = "com.ekincan.quickstore.config.ConfigGuiFactory")
 @Mod("quickstore")
@@ -49,18 +51,20 @@ public class QuickStore {
 
     public static Map<String, Integer> storedItems=new HashMap<>();
 
-    @SidedProxy(clientSide = "com.ekincan.quickstore.proxy.ProxyClient", serverSide = "com.ekincan.quickstore.proxy.ProxyServer")
+
+
+    @SidedProxy(clientSide = "com.klnon.quickstore.proxy.ProxyClient", serverSide = "com.klnon.quickstore.proxy.ProxyServer")
     public static Proxy proxy;
 
-    @EventHandler
+    @SubscribeEvent
     public void preInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(proxy);
         proxy.preInit();
     }
 
-    @EventHandler
-    public void serverLoad(FMLServerStartingEvent event) {
+    @SubscribeEvent
+    public void serverLoad(RegisterCommandsEvent event) {
         proxy.serverLoad();
         event.registerServerCommand(new QuickStoreCommand());
     }
@@ -71,10 +75,10 @@ public class QuickStore {
             proxy.onKeyPressed();
     }
 
-    public static List<ContainerInformation> getNearbyContainers(EntityPlayer player, float rangeBonus) {
+    public static List<ContainerInformation> getNearbyContainers(PlayerEntity player, float rangeBonus) {
         BlockPos playerPosition = player.getPosition();
-        List<TileEntityChest> chests = new ArrayList<>();
-        double range = EntityPlayer.REACH_DISTANCE.getDefaultValue() + rangeBonus;
+        List<EntityChest> chests = new ArrayList<>();
+        double range = PlayerEntity.REACH_DISTANCE.getDefaultValue() + rangeBonus;
         for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
             if (tileEntity instanceof TileEntityChest && blockDistance(playerPosition, tileEntity.getPos()) < range)
                 chests.add((TileEntityChest) tileEntity);
@@ -122,7 +126,7 @@ public class QuickStore {
         return containers;
     }
 
-    public static List<Item> getCurrentItems(EntityPlayer player) {
+    public static List<Item> getCurrentItems(PlayerEntity player) {
         InventoryPlayer inventory = player.inventory;
         int inventorySize = inventory.getSizeInventory();
         List<Item> playerItems = new ArrayList<>();

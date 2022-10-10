@@ -5,8 +5,12 @@ import java.util.*;
 import com.klnon.quickstore.QuickStore;
 import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.container.ContainerInformation;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
+import net.minecraft.command.CommandSource;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -16,24 +20,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 
-public class QuickStoreCommand extends CommandBase {
-    public String getName() {
-        return "quickstore";
-    }
-
-    public String getUsage(ICommandSender sender) {
-        return "commands.quickstore.des";
-    }
-
-    public int getRequiredPermissionLevel() {
-        return 0;
-    }
-
-    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-        return true;
-    }
+public class QuickStoreCommand implements Command<CommandSource> {
 
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+
+    }
+
+    @Override
+    public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
         EntityPlayer player = (EntityPlayer) sender.getCommandSenderEntity();
         List<ContainerInformation> containers = QuickStore.getNearbyContainers(player, 2.0F);
         InventoryPlayer inventoryPlayer = player.inventory;
@@ -120,5 +114,6 @@ public class QuickStoreCommand extends CommandBase {
             }
         }
         player.inventoryContainer.detectAndSendChanges();
+        return 0;
     }
 }
