@@ -3,6 +3,10 @@ package com.ekincan.quickstore;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ekincan.quickstore.command.QuickStoreCommand;
+import com.ekincan.quickstore.config.StoreConfig;
+import com.ekincan.quickstore.container.ContainerInformation;
+import com.ekincan.quickstore.proxy.Proxy;
 import net.minecraft.command.ICommand;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,7 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -25,13 +29,8 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
-@Mod(modid = "quickstore", name = "QuickStore", version = "1.0", acceptedMinecraftVersions = "[1.12.2]")
+@Mod(modid = "quickstore", name = "QuickStore", version = "1.4", acceptedMinecraftVersions = "[1.12.2]", guiFactory = "com.ekincan.quickstore.config.ConfigGuiFactory")
 public class QuickStore {
-    public static final String MODID = "quickstore";
-
-    public static final String NAME = "QuickStore";
-
-    public static final String VERSION = "1.0";
 
     public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel("quickstore");
 
@@ -60,20 +59,20 @@ public class QuickStore {
 
     public static float spawnItemCooldown;
 
-    @SidedProxy(clientSide = "com.ekincan.quickstore.ProxyClient", serverSide = "com.ekincan.quickstore.ProxyServer")
+    @SidedProxy(clientSide = "com.ekincan.quickstore.proxy.ProxyClient", serverSide = "com.ekincan.quickstore.proxy.ProxyServer")
     public static Proxy proxy;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        FMLCommonHandler.instance().bus().register(this);
-        FMLCommonHandler.instance().bus().register(proxy);
+        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(proxy);
         proxy.preInit();
     }
 
     @EventHandler
     public void serverLoad(FMLServerStartingEvent event) {
         proxy.serverLoad();
-        event.registerServerCommand((ICommand) new QuickStoreCommand());
+        event.registerServerCommand(new QuickStoreCommand());
     }
 
     @SubscribeEvent
@@ -93,11 +92,11 @@ public class QuickStore {
         List<TileEntityChest> ignoredChests = new ArrayList<>();
         List<ContainerInformation> containers = new ArrayList<>();
         for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
-            //TODO 可能有误
             if (tileEntity instanceof IInventory && !(tileEntity instanceof TileEntityChest) && blockDistance(playerPosition, tileEntity.getPos()) < range) {
                 ContainerInformation ci = new ContainerInformation();
                 ci.inventoryObject = (IInventory) tileEntity;
                 ci.blockPositionOfInventory = tileEntity;
+                //为熔炉的时候
                 if (tileEntity instanceof net.minecraft.tileentity.TileEntityFurnace) {
                     ci.ignoredSlot = 2;
                 } else {
@@ -112,6 +111,7 @@ public class QuickStore {
                 ContainerInformation ci = new ContainerInformation();
                 ci.ignoredSlot = -1000;
                 ci.chest1 = chest;
+                //检查相邻的箱子
                 chest.checkForAdjacentChests();
                 if (chest.adjacentChestXNeg != null) {
                     addThis = false;
@@ -138,11 +138,8 @@ public class QuickStore {
         List<Item> playerItems = new ArrayList<>();
         for (int n = 0; n < inventorySize; n++) {
             ItemStack stack = player.inventory.getStackInSlot(n);
-            //TODO getCount 可能有误
-            if (stack != null && stack.getMaxStackSize() > 1 && stack.getCount() > 0) {
-                Item item = stack.getItem();
-                if (Item.getIdFromItem(item) != 0)
-                    playerItems.add(item);
+            if (!stack.isEmpty() && (stack.getMaxStackSize() > 1 || StoreConfig.singleEnable) && stack.getCount() > 0) {
+                playerItems.add(stack.getItem());
             }
         }
         return playerItems;

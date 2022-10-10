@@ -1,4 +1,4 @@
-package com.ekincan.quickstore;
+package com.ekincan.quickstore.proxy;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;

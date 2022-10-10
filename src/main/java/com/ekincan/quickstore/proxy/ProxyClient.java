@@ -1,7 +1,11 @@
-package com.ekincan.quickstore;
+package com.ekincan.quickstore.proxy;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.Objects;
+
+import com.ekincan.quickstore.container.ContainerInformation;
+import com.ekincan.quickstore.QuickStore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
@@ -13,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -52,7 +55,6 @@ public class ProxyClient extends Proxy {
     }
 
     public boolean isKeyDown() {
-        //TODO 可能有误
         return storeKey.isKeyDown();
     }
 
@@ -63,7 +65,6 @@ public class ProxyClient extends Proxy {
         GL11.glDepthMask(false);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        //TODO 可能有误
         bufferBuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
         double dx = Math.abs(posA.x - posB.x);
         double dy = Math.abs(posA.y - posB.y);
@@ -157,7 +158,6 @@ public class ProxyClient extends Proxy {
             if (QuickStore.nextUpdateCooldown <= 0.0F) {
                 QuickStore.nearbyContainers = QuickStore.getNearbyContainers(QuickStore.player, 1.5F);
                 QuickStore.nextUpdateCooldown = 0.14F;
-                //TODO 可能有误
             } else {
                 QuickStore.nextUpdateCooldown -= 0.05F;
             }
@@ -170,14 +170,18 @@ public class ProxyClient extends Proxy {
                 QuickStore.lostItemsCheckCooldown = 0.2F;
                 QuickStore.leftItemChecks--;
                 List<Item> newItems = QuickStore.getCurrentItems(QuickStore.player);
-                QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.containers",QuickStore.nearbyContainers.size()));
-                if (newItems.size() < QuickStore.currentItems.size()) {
-                    QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.stored", (QuickStore.currentItems.size() - newItems.size())));
-                    (Minecraft.getMinecraft()).player.playSound(SoundEvent.REGISTRY.getObjectById(76), 1.0F, 2.0F);
-                    QuickStore.leftItemChecks = 0;
-                } else if (QuickStore.leftItemChecks <= 0) {
-                    QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.stored"));
-                    (Minecraft.getMinecraft()).player.playSound(SoundEvent.REGISTRY.getObjectById(76), 1.0F, 0.55F);
+                try {
+                    QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.containers",QuickStore.nearbyContainers.size()));
+                    if (newItems.size() < QuickStore.currentItems.size()) {
+                        QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.stored", (QuickStore.currentItems.size() - newItems.size())));
+                        (Minecraft.getMinecraft()).player.playSound(Objects.requireNonNull(SoundEvent.REGISTRY.getObjectById(76)), 1.0F, 2.0F);
+                        QuickStore.leftItemChecks = 0;
+                    } else if (QuickStore.leftItemChecks <= 0) {
+                        QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.nostored"));
+                        (Minecraft.getMinecraft()).player.playSound(Objects.requireNonNull(SoundEvent.REGISTRY.getObjectById(76)), 1.0F, 0.55F);
+                    }
+                }catch (Exception e){
+                    QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.wait"));
                 }
             } else {
                 QuickStore.lostItemsCheckCooldown -= 0.05F;

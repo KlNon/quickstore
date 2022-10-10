@@ -1,4 +1,4 @@
-package com.ekincan.quickstore;
+package com.ekincan.quickstore.container;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
