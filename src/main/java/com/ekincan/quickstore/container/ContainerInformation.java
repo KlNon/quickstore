@@ -15,6 +15,7 @@ public class ContainerInformation {
 
     public TileEntity blockPositionOfInventory;
 
+    public boolean isFull=false;
     public int ignoredSlot = -100;
 
     public TileEntityChest[] getChests() {

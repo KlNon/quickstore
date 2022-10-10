@@ -2,8 +2,10 @@ package com.ekincan.quickstore.proxy;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.ekincan.quickstore.config.StoreConfig;
 import com.ekincan.quickstore.container.ContainerInformation;
 import com.ekincan.quickstore.QuickStore;
 import net.minecraft.client.Minecraft;
@@ -174,6 +176,12 @@ public class ProxyClient extends Proxy {
                     QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.containers",QuickStore.nearbyContainers.size()));
                     if (newItems.size() < QuickStore.currentItems.size()) {
                         QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.stored", (QuickStore.currentItems.size() - newItems.size())));
+
+                        if(StoreConfig.detailInfoEnable) {
+                            for (Map.Entry<String, Integer> entry : QuickStore.storedItems.entrySet())
+                                QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.storeditems", entry.getKey(), entry.getValue()));
+                            QuickStore.storedItems.clear();
+                        }
                         (Minecraft.getMinecraft()).player.playSound(Objects.requireNonNull(SoundEvent.REGISTRY.getObjectById(76)), 1.0F, 2.0F);
                         QuickStore.leftItemChecks = 0;
                     } else if (QuickStore.leftItemChecks <= 0) {

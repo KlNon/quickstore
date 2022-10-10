@@ -3,9 +3,9 @@ commands.quickstore.containers=§3= %d Containers within Range.
 commands.quickstore.stored=§3= %d Stacks stored.
 commands.quickstore.nostored=§3= no items will be stored
 commands.quickstore.nospace=§3= No space in chest: [X:%s , Y:%s , Z:%s].
+commands.quickstore.storeditems=§3= %s stored number %d.
 commands.quickstore.des= Will sort your items into nearby chests.
 commands.quickstore.wait= Please wait.
-
 #keys
 keys.quickstore.store=Store inventory into nearby chests.
 keys.quickstore.title=Quick Store
@@ -15,3 +15,5 @@ config.quickstore.general.banitems=Items that will not be stored.
 config.quickstore.general.singleenable=Items like tools and weapons will be stored in single stacks.
 config.quickstore.general.slot=The first few slots will not be stored.
 config.quickstore.general.item.slot=Slots to keep food and torches.
+config.quickstore.general.detailinfoenable=Show the number of items stored.
+config.quickstore.general.fullinfoenable=Showcase full of boxes.

@@ -1,7 +1,9 @@
 package com.ekincan.quickstore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ekincan.quickstore.command.QuickStoreCommand;
 import com.ekincan.quickstore.config.StoreConfig;
@@ -56,6 +58,8 @@ public class QuickStore {
     public static List<Vec3d> flyingTargets;
 
     public static List<ContainerInformation> flyingContainers;
+
+    public static Map<String, Integer> storedItems=new HashMap<>();
 
     public static float spawnItemCooldown;
 
