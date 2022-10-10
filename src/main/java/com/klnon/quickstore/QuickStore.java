@@ -47,7 +47,7 @@ public class QuickStore {
 
     public static Map<String, Integer> storedItems=new HashMap<>();
 
-    @SidedProxy(clientSide = "com.ekincan.quickstore.proxy.ProxyClient", serverSide = "com.ekincan.quickstore.proxy.ProxyServer")
+    @SidedProxy(clientSide = "com.klnon.quickstore.proxy.ProxyClient", serverSide = "com.klnon.quickstore.proxy.ProxyServer")
     public static Proxy proxy;
 
     @EventHandler
