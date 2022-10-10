@@ -18,7 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -27,13 +26,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 @Mod(modid = "quickstore", name = "QuickStore", version = "1.4", acceptedMinecraftVersions = "[1.12.2]", guiFactory = "com.ekincan.quickstore.config.ConfigGuiFactory")
 public class QuickStore {
-
-    public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel("quickstore");
 
     public static EntityPlayer player;
 
@@ -50,17 +45,7 @@ public class QuickStore {
 
     public static List<ContainerInformation> nearbyContainers;
 
-    public static List<Item> spawnItems;
-
-    public static List<EntityItem> flyingItems;
-
-    public static List<Vec3d> flyingTargets;
-
-    public static List<ContainerInformation> flyingContainers;
-
     public static Map<String, Integer> storedItems=new HashMap<>();
-
-    public static float spawnItemCooldown;
 
     @SidedProxy(clientSide = "com.ekincan.quickstore.proxy.ProxyClient", serverSide = "com.ekincan.quickstore.proxy.ProxyServer")
     public static Proxy proxy;
