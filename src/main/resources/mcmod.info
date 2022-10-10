@@ -1,0 +1,16 @@
+[
+    {
+        "modid": "quickstore",
+        "name": "Quickstore",
+        "description": "test",
+        "version": "${version}",
+        "mcversion": "${mcversion}",
+        "url": "",
+        "updateUrl": "",
+        "authorList": [],
+        "credits": "",
+        "logoFile": "",
+        "screenshots": [],
+        "dependencies": []
+    }
+]
