@@ -1,0 +1,7 @@
+# commands
+commands.quickstore.containers=§3= %d Containers within Range.
+commands.quickstore.stored=§3= %d Stacks stored.
+
+#keys
+keys.quickstore.store=Store inventory into nearby chests.
+keys.quickstore.title=Quick Store

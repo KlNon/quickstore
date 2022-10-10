@@ -1,1 +1,1 @@
-press V to store items on your bag
+press V to store items in your bag

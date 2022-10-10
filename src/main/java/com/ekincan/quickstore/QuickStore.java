@@ -2,6 +2,7 @@ package com.ekincan.quickstore;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import net.minecraft.command.ICommand;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,6 +45,7 @@ public class QuickStore {
 
     public static int leftItemChecks = 0;
 
+
     public static List<Item> currentItems;
 
     public static List<ContainerInformation> nearbyContainers;
@@ -71,7 +73,7 @@ public class QuickStore {
     @EventHandler
     public void serverLoad(FMLServerStartingEvent event) {
         proxy.serverLoad();
-        event.registerServerCommand((ICommand)new QuickStoreCommand());
+        event.registerServerCommand((ICommand) new QuickStoreCommand());
     }
 
     @SubscribeEvent
@@ -86,7 +88,7 @@ public class QuickStore {
         double range = EntityPlayer.REACH_DISTANCE.getDefaultValue() + rangeBonus;
         for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
             if (tileEntity instanceof TileEntityChest && blockDistance(playerPosition, tileEntity.getPos()) < range)
-                chests.add((TileEntityChest)tileEntity);
+                chests.add((TileEntityChest) tileEntity);
         }
         List<TileEntityChest> ignoredChests = new ArrayList<>();
         List<ContainerInformation> containers = new ArrayList<>();
@@ -94,7 +96,7 @@ public class QuickStore {
             //TODO 可能有误
             if (tileEntity instanceof IInventory && !(tileEntity instanceof TileEntityChest) && blockDistance(playerPosition, tileEntity.getPos()) < range) {
                 ContainerInformation ci = new ContainerInformation();
-                ci.inventoryObject = (IInventory)tileEntity;
+                ci.inventoryObject = (IInventory) tileEntity;
                 ci.blockPositionOfInventory = tileEntity;
                 if (tileEntity instanceof net.minecraft.tileentity.TileEntityFurnace) {
                     ci.ignoredSlot = 2;
@@ -115,7 +117,7 @@ public class QuickStore {
                     addThis = false;
                 } else if (chest.adjacentChestXPos != null) {
                     ci.chest2 = chest.adjacentChestXPos;
-                } else if (chest.adjacentChestZNeg!= null) {
+                } else if (chest.adjacentChestZNeg != null) {
                     addThis = false;
                 } else if (chest.adjacentChestZPos != null) {
                     ci.chest2 = chest.adjacentChestZPos;

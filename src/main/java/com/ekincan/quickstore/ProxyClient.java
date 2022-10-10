@@ -14,16 +14,17 @@ import net.minecraft.item.Item;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 public class ProxyClient extends Proxy {
-    public static KeyBinding storeKey = new KeyBinding("Store inventory into nearby chests.", 47, "Quick Store");
+    public static KeyBinding storeKey = new KeyBinding("keys.quickstore.store",Keyboard.KEY_V, "keys.quickstore.title");
 
     public void preInit() {
         ClientRegistry.registerKeyBinding(storeKey);
@@ -157,8 +158,6 @@ public class ProxyClient extends Proxy {
                 QuickStore.nearbyContainers = QuickStore.getNearbyContainers(QuickStore.player, 1.5F);
                 QuickStore.nextUpdateCooldown = 0.14F;
                 //TODO 可能有误
-                if(isKeyPressed())
-                    QuickStore.player.sendMessage((ITextComponent)new TextComponentString(QuickStore.nearbyContainers.size() + " Containers within Range."));
             } else {
                 QuickStore.nextUpdateCooldown -= 0.05F;
             }
@@ -171,13 +170,14 @@ public class ProxyClient extends Proxy {
                 QuickStore.lostItemsCheckCooldown = 0.2F;
                 QuickStore.leftItemChecks--;
                 List<Item> newItems = QuickStore.getCurrentItems(QuickStore.player);
+                QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.containers",QuickStore.nearbyContainers.size()));
                 if (newItems.size() < QuickStore.currentItems.size()) {
-                    QuickStore.player.sendMessage((ITextComponent)new TextComponentString((QuickStore.currentItems.size() - newItems.size()) + " Stacks stored."));
-                    (Minecraft.getMinecraft()).player.playSound((SoundEvent)SoundEvent.REGISTRY.getObjectById(76), 1.0F, 2.0F);
+                    QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.stored", (QuickStore.currentItems.size() - newItems.size())));
+                    (Minecraft.getMinecraft()).player.playSound(SoundEvent.REGISTRY.getObjectById(76), 1.0F, 2.0F);
                     QuickStore.leftItemChecks = 0;
                 } else if (QuickStore.leftItemChecks <= 0) {
-                    QuickStore.player.sendMessage((ITextComponent)new TextComponentString("Stacks stored."));
-                    (Minecraft.getMinecraft()).player.playSound((SoundEvent)SoundEvent.REGISTRY.getObjectById(76), 1.0F, 0.55F);
+                    QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.stored"));
+                    (Minecraft.getMinecraft()).player.playSound(SoundEvent.REGISTRY.getObjectById(76), 1.0F, 0.55F);
                 }
             } else {
                 QuickStore.lostItemsCheckCooldown -= 0.05F;

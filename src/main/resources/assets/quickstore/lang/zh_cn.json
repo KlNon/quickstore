@@ -1,0 +1,4 @@
+{
+  "commands.quickstore.containers": "§3[快速贮藏] §r §e %d 个箱子在范围内.",
+  "commands.quickstore.stored": "§3[快速贮藏] §r §e %d 物品已储存!"
+}

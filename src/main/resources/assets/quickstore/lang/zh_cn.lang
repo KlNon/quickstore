@@ -1,0 +1,7 @@
+# commands
+commands.quickstore.containers=§3= %d 个箱子在范围内.
+commands.quickstore.stored=§3= %d 物品已储存!
+
+#keys
+keys.quickstore.store=将物品快速放入周围箱子.
+keys.quickstore.title=快速贮藏
