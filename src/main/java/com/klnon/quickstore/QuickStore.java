@@ -12,6 +12,7 @@ import com.klnon.quickstore.proxy.Proxy;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,10 +28,11 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 
-@Mod(modid = "quickstore", name = "QuickStore", version = "1.4", acceptedMinecraftVersions = "[1.12.2]", guiFactory = "com.ekincan.quickstore.config.ConfigGuiFactory")
+//@Mod(modid = "quickstore", name = "QuickStore", version = "1.4", acceptedMinecraftVersions = "[1.12.2]", guiFactory = "com.ekincan.quickstore.config.ConfigGuiFactory")
+@Mod("quickstore")
 public class QuickStore {
 
-    public static EntityPlayer player;
+    public static PlayerEntity player;
 
     public static boolean keyIsDown = false;
 
