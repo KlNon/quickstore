@@ -2,14 +2,14 @@ package com.klnon.quickstore.container;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Tuple3d;
 
 public class ContainerInformation {
-    public TileEntityChest chest1;
+    public ChestTileEntity chest1;
 
-    public TileEntityChest chest2;
+    public ChestTileEntity chest2;
 
     public IInventory inventoryObject;
 
@@ -18,14 +18,14 @@ public class ContainerInformation {
     public boolean isFull=false;
     public int ignoredSlot = -100;
 
-    public TileEntityChest[] getChests() {
+    public ChestTileEntity[] getChests() {
         if (this.chest2 != null) {
-            TileEntityChest[] arrayOfTileEntityChest = new TileEntityChest[2];
-            arrayOfTileEntityChest[0] = this.chest1;
-            arrayOfTileEntityChest[1] = this.chest2;
-            return arrayOfTileEntityChest;
+            ChestTileEntity[] arrayOfChestTileEntity = new ChestTileEntity[2];
+            arrayOfChestTileEntity[0] = this.chest1;
+            arrayOfChestTileEntity[1] = this.chest2;
+            return arrayOfChestTileEntity;
         }
-        TileEntityChest[] chests = new TileEntityChest[1];
+        ChestTileEntity[] chests = new ChestTileEntity[1];
         chests[0] = this.chest1;
         return chests;
     }
@@ -47,45 +47,45 @@ public class ContainerInformation {
         return chests;
     }
 
-    public Vec3d getBoundsStart() {
+    public Tuple3d getBoundsStart() {
         if (this.blockPositionOfInventory != null) {
             BlockPos pos = this.blockPositionOfInventory.getPos();
-            return new Vec3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
+            return new Tuple3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
         }
         if (this.chest1 != null) {
             BlockPos pos = this.chest1.getPos();
-            return new Vec3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
+            return new Tuple3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
         }
         if (this.chest2 != null) {
             BlockPos pos = this.chest2.getPos();
-            return new Vec3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
+            return new Tuple3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
         }
-        return new Vec3d(0.0D, 101.63D, 0.0D);
+        return new Tuple3d(0.0D, 101.63D, 0.0D);
     }
 
-    public Vec3d getBoundsEnd() {
+    public Tuple3d getBoundsEnd() {
         if (this.blockPositionOfInventory != null) {
             BlockPos pos = this.blockPositionOfInventory.getPos();
-            return new Vec3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
+            return new Tuple3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
         }
         if (this.chest1 != null && this.chest2 != null) {
             BlockPos pos = this.chest2.getPos();
-            return new Vec3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
+            return new Tuple3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
         }
         if (this.chest1 != null) {
             BlockPos pos = this.chest1.getPos();
-            return new Vec3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
+            return new Tuple3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
         }
         if (this.chest2 != null) {
             BlockPos pos = this.chest2.getPos();
-            return new Vec3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
+            return new Tuple3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
         }
-        return new Vec3d(1.0D, 102.63D, 1.0D);
+        return new Tuple3d(1.0D, 102.63D, 1.0D);
     }
 
-    public Vec3d getLidLocation() {
-        Vec3d from = getBoundsStart();
-        Vec3d to = getBoundsEnd();
-        return new Vec3d(from.x + (to.x - from.x) * 0.5D, from.y + (to.y - from.y) * 0.5D + 0.1D, from.z + (to.z - from.z) * 0.5D);
+    public Tuple3d getLidLocation() {
+        Tuple3d from = getBoundsStart();
+        Tuple3d to = getBoundsEnd();
+        return new Tuple3d(from.x + (to.x - from.x) * 0.5D, from.y + (to.y - from.y) * 0.5D + 0.1D, from.z + (to.z - from.z) * 0.5D);
     }
 }

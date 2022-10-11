@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.klnon.quickstore.command.QuickStoreCommand;
 import com.klnon.quickstore.config.StoreConfig;
@@ -11,7 +12,7 @@ import com.klnon.quickstore.container.ContainerInformation;
 import com.klnon.quickstore.proxy.Proxy;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,10 +30,29 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 //@Mod(modid = "quickstore", name = "QuickStore", version = "1.4", acceptedMinecraftVersions = "[1.12.2]", guiFactory = "com.ekincan.quickstore.config.ConfigGuiFactory")
 @Mod("quickstore")
 public class QuickStore {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static PlayerEntity player;
 
@@ -53,14 +73,66 @@ public class QuickStore {
 
 
 
-    @SidedProxy(clientSide = "com.klnon.quickstore.proxy.ProxyClient", serverSide = "com.klnon.quickstore.proxy.ProxyServer")
+//    @SidedProxy(clientSide = "com.klnon.quickstore.proxy.ProxyClient", serverSide = "com.klnon.quickstore.proxy.ProxyServer")
     public static Proxy proxy;
 
     @SubscribeEvent
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit() {
+        // Register the setup method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        // Register the enqueueIMC method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+        // Register the processIMC method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
+        // Register the doClientStuff method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(proxy);
         proxy.preInit();
+    }
+
+    private void setup(final FMLCommonSetupEvent event) {
+        // some preinit code
+        LOGGER.info("HELLO FROM PREINIT");
+        LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+    }
+
+    private void doClientStuff(final FMLClientSetupEvent event) {
+        // do something that can only be done on the client
+        LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
+    }
+
+    private void enqueueIMC(final InterModEnqueueEvent event) {
+        // some example code to dispatch IMC to another mod
+        InterModComms.sendTo("test", "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
+    }
+
+    private void processIMC(final InterModProcessEvent event) {
+        // some example code to receive and process InterModComms from other mods
+        LOGGER.info("Got IMC {}", event.getIMCStream().
+                map(m->m.getMessageSupplier().get()).
+                collect(Collectors.toList()));
+    }
+
+
+    // You can use SubscribeEvent and let the Event Bus discover methods to call
+    @SubscribeEvent
+    public void onServerStarting(FMLServerStartingEvent event) {
+        // do something when the server starts
+        LOGGER.info("HELLO from server starting");
+    }
+
+
+    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
+    // Event bus for receiving Registry Events)
+    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
+    public static class RegistryEvents {
+        @SubscribeEvent
+        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
+            // register a new block here
+            LOGGER.info("HELLO from Register Block");
+        }
     }
 
     @SubscribeEvent
@@ -73,73 +145,5 @@ public class QuickStore {
     public void onKeyPressed(InputEvent.KeyInputEvent event) {
         if (proxy.isKeyPressed() && !keyIsDown)
             proxy.onKeyPressed();
-    }
-
-    public static List<ContainerInformation> getNearbyContainers(PlayerEntity player, float rangeBonus) {
-        BlockPos playerPosition = player.getPosition();
-        List<EntityChest> chests = new ArrayList<>();
-        double range = PlayerEntity.REACH_DISTANCE.getDefaultValue() + rangeBonus;
-        for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
-            if (tileEntity instanceof TileEntityChest && blockDistance(playerPosition, tileEntity.getPos()) < range)
-                chests.add((TileEntityChest) tileEntity);
-        }
-        List<TileEntityChest> ignoredChests = new ArrayList<>();
-        List<ContainerInformation> containers = new ArrayList<>();
-        for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
-            if (tileEntity instanceof IInventory && !(tileEntity instanceof TileEntityChest) && blockDistance(playerPosition, tileEntity.getPos()) < range) {
-                ContainerInformation ci = new ContainerInformation();
-                ci.inventoryObject = (IInventory) tileEntity;
-                ci.blockPositionOfInventory = tileEntity;
-                //为熔炉的时候
-                if (tileEntity instanceof net.minecraft.tileentity.TileEntityFurnace) {
-                    ci.ignoredSlot = 2;
-                } else {
-                    ci.ignoredSlot = -1000;
-                }
-                containers.add(ci);
-            }
-        }
-        for (TileEntityChest chest : chests) {
-            if (!ignoredChests.contains(chest)) {
-                boolean addThis = true;
-                ContainerInformation ci = new ContainerInformation();
-                ci.ignoredSlot = -1000;
-                ci.chest1 = chest;
-                //检查相邻的箱子
-                chest.checkForAdjacentChests();
-                if (chest.adjacentChestXNeg != null) {
-                    addThis = false;
-                } else if (chest.adjacentChestXPos != null) {
-                    ci.chest2 = chest.adjacentChestXPos;
-                } else if (chest.adjacentChestZNeg != null) {
-                    addThis = false;
-                } else if (chest.adjacentChestZPos != null) {
-                    ci.chest2 = chest.adjacentChestZPos;
-                }
-                if (addThis) {
-                    if (ci.chest2 != null)
-                        ignoredChests.add(ci.chest2);
-                    containers.add(ci);
-                }
-            }
-        }
-        return containers;
-    }
-
-    public static List<Item> getCurrentItems(PlayerEntity player) {
-        InventoryPlayer inventory = player.inventory;
-        int inventorySize = inventory.getSizeInventory();
-        List<Item> playerItems = new ArrayList<>();
-        for (int n = 0; n < inventorySize; n++) {
-            ItemStack stack = player.inventory.getStackInSlot(n);
-            if (!stack.isEmpty() && (stack.getMaxStackSize() > 1 || StoreConfig.singleEnable) && stack.getCount() > 0) {
-                playerItems.add(stack.getItem());
-            }
-        }
-        return playerItems;
-    }
-
-    public static double blockDistance(BlockPos positionA, BlockPos positionB) {
-        return positionA.getDistance(positionB.getX(), positionB.getY(), positionB.getZ());
     }
 }

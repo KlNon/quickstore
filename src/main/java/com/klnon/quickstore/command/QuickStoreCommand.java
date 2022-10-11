@@ -5,32 +5,30 @@ import java.util.*;
 import com.klnon.quickstore.QuickStore;
 import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.container.ContainerInformation;
+import com.klnon.quickstore.utils.Utils;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class QuickStoreCommand implements Command<CommandSource> {
 
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-
-    }
+//    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+//
+//    }
 
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        EntityPlayer player = (EntityPlayer) sender.getCommandSenderEntity();
-        List<ContainerInformation> containers = QuickStore.getNearbyContainers(player, 2.0F);
-        InventoryPlayer inventoryPlayer = player.inventory;
+        //TODO asPlayer()可能BUG
+        PlayerEntity player = context.getSource().asPlayer();
+        List<ContainerInformation> containers = Utils.getNearbyContainers(player, 2.0F);
+        PlayerInventory inventoryPlayer = player.inventory;
         int playerInventorySize = inventoryPlayer.getSizeInventory();
         List<String> BanItems = Arrays.asList(StoreConfig.BanItems);
         List<String> itemSlotBan = Arrays.asList(StoreConfig.itemSlotBan);
@@ -41,7 +39,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
             if (BanItems.contains(Objects.requireNonNull(playersItemStack.getItem().getRegistryName()).toString())) {
                 continue;
             }
-            if (!(!((playersItemStack.getItem() instanceof net.minecraft.item.ItemFood) && itemSlotBan.contains(playersItemStack.getItem().getRegistryName().toString())) || inventorySlot > StoreConfig.itemSlot))
+            if (!(!((playersItemStack.getItem().getFood() != null) && itemSlotBan.contains(playersItemStack.getItem().getRegistryName().toString())) || inventorySlot > StoreConfig.itemSlot))
                 continue;
             //玩家背包不为空,这个在玩家背包的物品堆叠最大数量大于1,数量大于0, 不为在物品栏的食物和火把
             if (!playersItemStack.isEmpty() && (playersItemStack.getMaxStackSize() > 1 || StoreConfig.singleEnable)
@@ -81,7 +79,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                                 int playerCount=playersItemStack.getCount();
                                 //统计贮藏物品,不统计空气
                                 if (StoreConfig.detailInfoEnable) {
-                                    String displayName=playersItemStack.getDisplayName();
+                                    String displayName=playersItemStack.getDisplayName().toString();
                                     if (map.containsKey(displayName)) {
                                         map.put(displayName, map.get(displayName)+old_playerCount-playerCount);
                                     } else {
@@ -96,12 +94,12 @@ public class QuickStoreCommand implements Command<CommandSource> {
                     if (freeSlotInventory == null && StoreConfig.fullInfoEnable && !ci.isFull) {
                         ci.isFull = true;
                         BlockPos pos = ci.chest1.getPos();
-                        QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()));
+                        context.getSource().sendFeedback(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), false);
                     }
                     if (containsItem && !itemCompletlyAdded && freeSlotInventory != null) {
                         freeSlotInventory.setInventorySlotContents(freeSlotIndex, inventoryPlayer.getStackInSlot(inventorySlot));
                         if (StoreConfig.detailInfoEnable) {
-                            String displayName=playersItemStack.getDisplayName();
+                            String displayName=playersItemStack.getDisplayName().toString();
                             if (map.containsKey(displayName)) {
                                 map.put(displayName, map.get(displayName)+inventoryPlayer.getStackInSlot(inventorySlot).getCount());
                             } else {
