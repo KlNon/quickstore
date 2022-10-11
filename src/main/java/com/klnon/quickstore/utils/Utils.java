@@ -2,6 +2,7 @@ package com.klnon.quickstore.utils;
 
 import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.container.ContainerInformation;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -25,7 +26,7 @@ public class Utils {
 
     public static String MOD_ID = "quickstore";
     
-    public static List<ContainerInformation> getNearbyContainers(PlayerEntity player, float rangeBonus) {
+    public static List<ContainerInformation> getNearbyContainers(PlayerEntity player, double rangeBonus) {
         BlockPos playerPosition = player.getPosition();
         List<ChestTileEntity> chests = new ArrayList<>();
         //TODO 可能有误

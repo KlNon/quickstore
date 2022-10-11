@@ -16,5 +16,6 @@
   "config.quickstore.general.slot":"The first few slots will not be stored.",
   "config.quickstore.general.item.slot":"Slots to keep food and torches.",
   "config.quickstore.general.detailinfoenable":"Show the number of items stored.",
-  "config.quickstore.general.fullinfoenable":"Showcase full of boxes."
+  "config.quickstore.general.fullinfoenable":"Showcase full of boxes.",
+  "config.quickstore.general.distance": "distance"
 }

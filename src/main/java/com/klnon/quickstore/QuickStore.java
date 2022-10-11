@@ -13,6 +13,7 @@ import com.klnon.quickstore.gui.ClientGui;
 import com.klnon.quickstore.gui.GuiMethods;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.PlayerEntity;
@@ -116,6 +117,7 @@ public class QuickStore {
                     .executes(QuickStoreCommand.instance)
         );
         player= GuiMethods.getPlayer();
+        player= Minecraft.getInstance().player;
         dispatcher.register(Commands.literal("bs").redirect(cmd));
         MinecraftForge.EVENT_BUS.register(new GuiMethods());
     }

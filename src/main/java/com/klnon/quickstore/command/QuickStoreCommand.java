@@ -27,7 +27,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
         //TODO asPlayer()可能BUG
         PlayerEntity player = context.getSource().asPlayer();
-        List<ContainerInformation> containers = Utils.getNearbyContainers(player, 2.0F);
+        List<ContainerInformation> containers = Utils.getNearbyContainers(player, 50.0F);
         PlayerInventory inventoryPlayer = player.inventory;
         int playerInventorySize = inventoryPlayer.getSizeInventory();
         List<String> BanItems = Arrays.asList(StoreConfig.BanItems.get());
@@ -101,7 +101,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                     if (containsItem && !itemCompletlyAdded && freeSlotInventory != null) {
                         freeSlotInventory.setInventorySlotContents(freeSlotIndex, inventoryPlayer.getStackInSlot(inventorySlot));
                         if (StoreConfig.detailInfoEnable.get()) {
-                            String displayName=playersItemStack.getDisplayName().toString();
+                            String displayName=playersItemStack.getDisplayName();
                             if (map.containsKey(displayName)) {
                                 map.put(displayName, map.get(displayName)+inventoryPlayer.getStackInSlot(inventorySlot).getCount());
                             } else {

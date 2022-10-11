@@ -158,7 +158,7 @@ public class GuiMethods {
             QuickStore.keyIsDown = true;
             QuickStore.player = getPlayer();
             if (QuickStore.nextUpdateCooldown <= 0.0F) {
-                QuickStore.nearbyContainers = Utils.getNearbyContainers(QuickStore.player, 1.5F);
+                QuickStore.nearbyContainers = Utils.getNearbyContainers(QuickStore.player, 50.0F);
                 QuickStore.nextUpdateCooldown = 0.14F;
             } else {
                 QuickStore.nextUpdateCooldown -= 0.05F;

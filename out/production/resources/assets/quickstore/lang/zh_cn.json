@@ -16,5 +16,6 @@
   "config.quickstore.general.slot":"人物背包多少格不参与贮藏(共36格).",
   "config.quickstore.general.item.slot":"保存食物和局部黑名单(默认火把)的栏位.",
   "config.quickstore.general.detailinfoenable":"显示贮藏细节.",
-  "config.quickstore.general.fullinfoenable":"显示满了的箱子位置(大致位置)."
+  "config.quickstore.general.fullinfoenable":"显示满了的箱子位置(大致位置).",
+  "config.quickstore.general.distance": "距离"
 }
