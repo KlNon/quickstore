@@ -4,7 +4,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Tuple3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 public class ContainerInformation {
     public ChestTileEntity chest1;
@@ -47,45 +47,45 @@ public class ContainerInformation {
         return chests;
     }
 
-    public Tuple3d getBoundsStart() {
+    public Vector3d getBoundsStart() {
         if (this.blockPositionOfInventory != null) {
             BlockPos pos = this.blockPositionOfInventory.getPos();
-            return new Tuple3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
+            return new Vector3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
         }
         if (this.chest1 != null) {
             BlockPos pos = this.chest1.getPos();
-            return new Tuple3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
+            return new Vector3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
         }
         if (this.chest2 != null) {
             BlockPos pos = this.chest2.getPos();
-            return new Tuple3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
+            return new Vector3d(pos.getX(), pos.getY() + 1.63D, pos.getZ());
         }
-        return new Tuple3d(0.0D, 101.63D, 0.0D);
+        return new Vector3d(0.0D, 101.63D, 0.0D);
     }
 
-    public Tuple3d getBoundsEnd() {
+    public Vector3d getBoundsEnd() {
         if (this.blockPositionOfInventory != null) {
             BlockPos pos = this.blockPositionOfInventory.getPos();
-            return new Tuple3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
+            return new Vector3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
         }
         if (this.chest1 != null && this.chest2 != null) {
             BlockPos pos = this.chest2.getPos();
-            return new Tuple3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
+            return new Vector3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
         }
         if (this.chest1 != null) {
             BlockPos pos = this.chest1.getPos();
-            return new Tuple3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
+            return new Vector3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
         }
         if (this.chest2 != null) {
             BlockPos pos = this.chest2.getPos();
-            return new Tuple3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
+            return new Vector3d((pos.getX() + 1), pos.getY() + 2.63D, (pos.getZ() + 1));
         }
-        return new Tuple3d(1.0D, 102.63D, 1.0D);
+        return new Vector3d(1.0D, 102.63D, 1.0D);
     }
 
-    public Tuple3d getLidLocation() {
-        Tuple3d from = getBoundsStart();
-        Tuple3d to = getBoundsEnd();
-        return new Tuple3d(from.x + (to.x - from.x) * 0.5D, from.y + (to.y - from.y) * 0.5D + 0.1D, from.z + (to.z - from.z) * 0.5D);
+    public Vector3d getLidLocation() {
+        Vector3d from = getBoundsStart();
+        Vector3d to = getBoundsEnd();
+        return new Vector3d(from.x + (to.x - from.x) * 0.5D, from.y + (to.y - from.y) * 0.5D + 0.1D, from.z + (to.z - from.z) * 0.5D);
     }
 }

@@ -22,7 +22,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
 //    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 //
 //    }
-
+    public static QuickStoreCommand instance = new QuickStoreCommand();
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
         //TODO asPlayer()可能BUG
@@ -91,11 +91,13 @@ public class QuickStoreCommand implements Command<CommandSource> {
                             }
                         }
                     }
+                    //如果箱子没有空间则提示
                     if (freeSlotInventory == null && StoreConfig.fullInfoEnable && !ci.isFull) {
                         ci.isFull = true;
                         BlockPos pos = ci.chest1.getPos();
                         context.getSource().sendFeedback(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), false);
                     }
+                    //
                     if (containsItem && !itemCompletlyAdded && freeSlotInventory != null) {
                         freeSlotInventory.setInventorySlotContents(freeSlotIndex, inventoryPlayer.getStackInSlot(inventorySlot));
                         if (StoreConfig.detailInfoEnable) {
@@ -108,10 +110,12 @@ public class QuickStoreCommand implements Command<CommandSource> {
                         }
                         inventoryPlayer.setInventorySlotContents(inventorySlot, ItemStack.EMPTY);
                     }
+                    //TODO 同步物品栏
                 }
             }
         }
-        player.inventoryContainer.detectAndSendChanges();
+        //TODO 或者这里同步物品栏
+//        player.inventoryContainer.detectAndSendChanges();
         return 0;
     }
 }

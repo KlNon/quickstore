@@ -10,46 +10,32 @@ import com.klnon.quickstore.command.QuickStoreCommand;
 import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.container.ContainerInformation;
 import com.klnon.quickstore.proxy.Proxy;
-import net.minecraft.entity.item.EntityItem;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
 //@Mod(modid = "quickstore", name = "QuickStore", version = "1.4", acceptedMinecraftVersions = "[1.12.2]", guiFactory = "com.ekincan.quickstore.config.ConfigGuiFactory")
 @Mod("quickstore")
+@Mod.EventBusSubscriber
 public class QuickStore {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -74,7 +60,7 @@ public class QuickStore {
 
 
 //    @SidedProxy(clientSide = "com.klnon.quickstore.proxy.ProxyClient", serverSide = "com.klnon.quickstore.proxy.ProxyServer")
-    public static Proxy proxy;
+//    public static Proxy proxy;
 
     @SubscribeEvent
     public void preInit() {
@@ -88,8 +74,9 @@ public class QuickStore {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(proxy);
-        proxy.preInit();
+        //TODO 按键注册可能要删除
+//        MinecraftForge.EVENT_BUS.register(proxy);
+//        proxy.preInit();
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -117,12 +104,20 @@ public class QuickStore {
 
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(FMLServerStartingEvent event) {
-        // do something when the server starts
-        LOGGER.info("HELLO from server starting");
-    }
 
+    //TODO 注册指令
+    @SubscribeEvent
+    public static void onServerStaring(RegisterCommandsEvent event) {
+        CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
+        LiteralCommandNode<CommandSource> cmd = dispatcher.register(
+                Commands.literal("quickstore").then(
+                        Commands.literal("test")
+                                .requires((commandSource) -> commandSource.hasPermissionLevel(0))
+                                .executes(QuickStoreCommand.instance)
+                )
+        );
+        dispatcher.register(Commands.literal("bs").redirect(cmd));
+    }
 
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
     // Event bus for receiving Registry Events)
@@ -135,15 +130,9 @@ public class QuickStore {
         }
     }
 
-    @SubscribeEvent
-    public void serverLoad(RegisterCommandsEvent event) {
-        proxy.serverLoad();
-        event.registerServerCommand(new QuickStoreCommand());
-    }
-
-    @SubscribeEvent
-    public void onKeyPressed(InputEvent.KeyInputEvent event) {
-        if (proxy.isKeyPressed() && !keyIsDown)
-            proxy.onKeyPressed();
-    }
+//    @SubscribeEvent
+//    public void serverLoad(RegisterCommandsEvent event) {
+//        proxy.serverLoad();
+//        event.registerServerCommand(new QuickStoreCommand());
+//    }
 }
