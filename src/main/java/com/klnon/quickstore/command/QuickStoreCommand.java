@@ -9,6 +9,7 @@ import com.klnon.quickstore.utils.Utils;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.sun.org.apache.xml.internal.security.utils.I18n;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -101,7 +102,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                     if (containsItem && !itemCompletlyAdded && freeSlotInventory != null) {
                         freeSlotInventory.setInventorySlotContents(freeSlotIndex, inventoryPlayer.getStackInSlot(inventorySlot));
                         if (StoreConfig.detailInfoEnable.get()) {
-                            String displayName=playersItemStack.getDisplayName();
+                            String displayName=playersItemStack.get;
                             if (map.containsKey(displayName)) {
                                 map.put(displayName, map.get(displayName)+inventoryPlayer.getStackInSlot(inventorySlot).getCount());
                             } else {
