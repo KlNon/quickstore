@@ -28,7 +28,7 @@ public class Utils {
     public static List<ContainerInformation> getNearbyContainers(PlayerEntity player, float rangeBonus) {
         BlockPos playerPosition = player.getPosition();
         List<ChestTileEntity> chests = new ArrayList<>();
-        //TODO getRenderViewEntity可能有误
+        //TODO 可能有误
         double range = PlayerEntity.getRenderDistanceWeight() + rangeBonus;
         for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
             if (tileEntity instanceof ChestTileEntity && blockDistance(playerPosition, tileEntity.getPos()) < range)
@@ -84,7 +84,7 @@ public class Utils {
         List<Item> playerItems = new ArrayList<>();
         for (int n = 0; n < inventorySize; n++) {
             ItemStack stack = player.inventory.getStackInSlot(n);
-            if (!stack.isEmpty() && (stack.getMaxStackSize() > 1 || StoreConfig.singleEnable) && stack.getCount() > 0) {
+            if (!stack.isEmpty() && (stack.getMaxStackSize() > 1 || StoreConfig.singleEnable.get()) && stack.getCount() > 0) {
                 playerItems.add(stack.getItem());
             }
         }

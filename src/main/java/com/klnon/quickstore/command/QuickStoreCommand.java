@@ -30,8 +30,8 @@ public class QuickStoreCommand implements Command<CommandSource> {
         List<ContainerInformation> containers = Utils.getNearbyContainers(player, 2.0F);
         PlayerInventory inventoryPlayer = player.inventory;
         int playerInventorySize = inventoryPlayer.getSizeInventory();
-        List<String> BanItems = Arrays.asList(StoreConfig.BanItems);
-        List<String> itemSlotBan = Arrays.asList(StoreConfig.itemSlotBan);
+        List<String> BanItems = Arrays.asList(StoreConfig.BanItems.get());
+        List<String> itemSlotBan = Arrays.asList(StoreConfig.itemSlotBan.get());
         Map<String,Integer> map=QuickStore.storedItems;
         for (int inventorySlot = 0; inventorySlot < playerInventorySize; inventorySlot++) {
             ItemStack playersItemStack = inventoryPlayer.getStackInSlot(inventorySlot);
@@ -39,12 +39,12 @@ public class QuickStoreCommand implements Command<CommandSource> {
             if (BanItems.contains(Objects.requireNonNull(playersItemStack.getItem().getRegistryName()).toString())) {
                 continue;
             }
-            if (!(!((playersItemStack.getItem().getFood() != null) && itemSlotBan.contains(playersItemStack.getItem().getRegistryName().toString())) || inventorySlot > StoreConfig.itemSlot))
+            if (!(!((playersItemStack.getItem().getFood() != null) && itemSlotBan.contains(playersItemStack.getItem().getRegistryName().toString())) || inventorySlot > StoreConfig.itemSlot.get()))
                 continue;
             //玩家背包不为空,这个在玩家背包的物品堆叠最大数量大于1,数量大于0, 不为在物品栏的食物和火把
-            if (!playersItemStack.isEmpty() && (playersItemStack.getMaxStackSize() > 1 || StoreConfig.singleEnable)
+            if (!playersItemStack.isEmpty() && (playersItemStack.getMaxStackSize() > 1 || StoreConfig.singleEnable.get())
                     && playersItemStack.getCount() > 0
-                    && inventorySlot > StoreConfig.slot) {
+                    && inventorySlot > StoreConfig.slot.get()) {
                 for (ContainerInformation ci : containers) {
                     boolean containsItem = false;
                     boolean itemCompletlyAdded = false;
@@ -78,7 +78,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                                 playersItemStack.setCount(playersItemStack.getCount() - removedCountFromPlayer);
                                 int playerCount=playersItemStack.getCount();
                                 //统计贮藏物品,不统计空气
-                                if (StoreConfig.detailInfoEnable) {
+                                if (StoreConfig.detailInfoEnable.get()) {
                                     String displayName=playersItemStack.getDisplayName().toString();
                                     if (map.containsKey(displayName)) {
                                         map.put(displayName, map.get(displayName)+old_playerCount-playerCount);
@@ -92,7 +92,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                         }
                     }
                     //如果箱子没有空间则提示
-                    if (freeSlotInventory == null && StoreConfig.fullInfoEnable && !ci.isFull) {
+                    if (freeSlotInventory == null && StoreConfig.fullInfoEnable.get() && !ci.isFull) {
                         ci.isFull = true;
                         BlockPos pos = ci.chest1.getPos();
                         context.getSource().sendFeedback(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), false);
@@ -100,7 +100,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                     //
                     if (containsItem && !itemCompletlyAdded && freeSlotInventory != null) {
                         freeSlotInventory.setInventorySlotContents(freeSlotIndex, inventoryPlayer.getStackInSlot(inventorySlot));
-                        if (StoreConfig.detailInfoEnable) {
+                        if (StoreConfig.detailInfoEnable.get()) {
                             String displayName=playersItemStack.getDisplayName().toString();
                             if (map.containsKey(displayName)) {
                                 map.put(displayName, map.get(displayName)+inventoryPlayer.getStackInSlot(inventorySlot).getCount());

@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 import com.klnon.quickstore.command.QuickStoreCommand;
 import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.container.ContainerInformation;
-import com.klnon.quickstore.proxy.Proxy;
+import com.klnon.quickstore.gui.ClientGui;
+import com.klnon.quickstore.gui.GuiMethods;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.CommandSource;
@@ -110,13 +111,13 @@ public class QuickStore {
     public static void onServerStaring(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
         LiteralCommandNode<CommandSource> cmd = dispatcher.register(
-                Commands.literal("quickstore").then(
-                        Commands.literal("test")
-                                .requires((commandSource) -> commandSource.hasPermissionLevel(0))
-                                .executes(QuickStoreCommand.instance)
-                )
+                Commands.literal("quickstore")
+                    .requires((commandSource) -> commandSource.hasPermissionLevel(0))
+                    .executes(QuickStoreCommand.instance)
         );
+        player= GuiMethods.getPlayer();
         dispatcher.register(Commands.literal("bs").redirect(cmd));
+        MinecraftForge.EVENT_BUS.register(new GuiMethods());
     }
 
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
@@ -129,6 +130,8 @@ public class QuickStore {
             LOGGER.info("HELLO from Register Block");
         }
     }
+
+
 
 //    @SubscribeEvent
 //    public void serverLoad(RegisterCommandsEvent event) {
