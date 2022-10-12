@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.klnon.quickstore.QuickStore;
 import com.klnon.quickstore.config.StoreConfig;
-import com.klnon.quickstore.utils.model.ContainerInformation;
+import com.klnon.quickstore.model.ContainerInformation;
 import com.klnon.quickstore.utils.Utils;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
@@ -19,32 +19,29 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 public class QuickStoreCommand implements Command<CommandSource> {
 
-//    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-//
-//    }
     public static QuickStoreCommand instance = new QuickStoreCommand();
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
         //TODO asPlayer()可能BUG
         PlayerEntity player = context.getSource().asPlayer();
-        List<ContainerInformation> containers = Utils.getNearbyContainers(player, 50.0F);
+        List<ContainerInformation> containers = Utils.getNearbyContainers(player);
         PlayerInventory inventoryPlayer = player.inventory;
         int playerInventorySize = inventoryPlayer.getSizeInventory();
-        List<String> BanItems = Arrays.asList(StoreConfig.BanItems.get());
-        List<String> itemSlotBan = Arrays.asList(StoreConfig.itemSlotBan.get());
+        List<String> BanItems = Collections.singletonList(StoreConfig.general.BanItems.get());
+        List<String> itemSlotBan = Collections.singletonList(StoreConfig.general.itemSlotBan.get());
         for (int inventorySlot = 0; inventorySlot < playerInventorySize; inventorySlot++) {
             ItemStack playersItemStack = inventoryPlayer.getStackInSlot(inventorySlot);
 
             if (BanItems.contains(Objects.requireNonNull(playersItemStack.getItem().getRegistryName()).toString()))
                 continue;
-            if(inventorySlot <= StoreConfig.slot.get())
+            if(inventorySlot <= StoreConfig.general.slot.get())
                 continue;
-            if (((playersItemStack.getItem().getFood() != null) || itemSlotBan.contains(playersItemStack.getItem().getRegistryName().toString())) && inventorySlot <= StoreConfig.itemSlot.get())
+            if (((playersItemStack.getItem().getFood() != null) || itemSlotBan.contains(playersItemStack.getItem().getRegistryName().toString())) && inventorySlot <= StoreConfig.general.itemSlot.get())
                 continue;
             //玩家背包不为空,这个在玩家背包的物品堆叠最大数量大于1,数量大于0, 不为在物品栏的食物和火把
-            if (!playersItemStack.isEmpty() && (playersItemStack.getMaxStackSize() > 1 || StoreConfig.singleEnable.get())
+            if (!playersItemStack.isEmpty() && (playersItemStack.getMaxStackSize() > 1 || StoreConfig.switches.singleEnable.get())
                     && playersItemStack.getCount() > 0
-                    && inventorySlot > StoreConfig.slot.get()) {
+                    && inventorySlot > StoreConfig.general.slot.get()) {
                 for (ContainerInformation ci : containers) {
                     boolean containsItem = false;
                     boolean itemCompletlyAdded = false;
@@ -80,7 +77,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                                 playersItemStack.setCount(playersItemStack.getCount() - removedCountFromPlayer);
                                 int playerCount=playersItemStack.getCount();
                                 //统计贮藏物品,不统计空气
-                                if (StoreConfig.detailInfoEnable.get()) {
+                                if (StoreConfig.switches.detailInfoEnable.get()) {
                                     if (QuickStore.storedItems.containsKey(displayName)) {
                                         QuickStore.storedItems.put(displayName, QuickStore.storedItems.get(displayName)+old_playerCount-playerCount);
                                     } else {
@@ -95,15 +92,15 @@ public class QuickStoreCommand implements Command<CommandSource> {
                         }
                     }
                     //如果箱子没有空间则提示
-                    if (freeSlotInventory == null && StoreConfig.fullInfoEnable.get() && !ci.isFull) {
+                    if (freeSlotInventory == null && StoreConfig.switches.fullInfoEnable.get() && !ci.isFull) {
                         ci.isFull = true;
                         BlockPos pos = ci.chest1.getPos();
                         context.getSource().sendFeedback(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), false);
                     }
                     //
                     if (containsItem && !itemCompletlyAdded && freeSlotInventory != null) {
-                        if (StoreConfig.detailInfoEnable.get()&& !playersItemStack.isEmpty()) {
-                            String displayName=playersItemStack.getItem().toString();
+                        if (StoreConfig.switches.detailInfoEnable.get()&& !playersItemStack.isEmpty()) {
+                            String displayName=playersItemStack.getTextComponent().getString();
                             if (QuickStore.storedItems.containsKey(displayName)) {
                                 QuickStore.storedItems.put(displayName, QuickStore.storedItems.get(displayName)+inventoryPlayer.getStackInSlot(inventorySlot).getCount());
                             } else {
@@ -124,7 +121,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                 player.sendMessage(new TranslationTextComponent("commands.quickstore.nostored"), QuickStore.player.getUniqueID());
             } else {
                 player.sendMessage(new TranslationTextComponent("commands.quickstore.stored", (QuickStore.storedItems.size())), QuickStore.player.getUniqueID());
-                if (StoreConfig.detailInfoEnable.get()) {
+                if (StoreConfig.switches.detailInfoEnable.get()) {
                     for (Map.Entry<String, Integer> entry : QuickStore.storedItems.entrySet())
                         player.sendMessage(new TranslationTextComponent("commands.quickstore.storeditems", entry.getKey(), entry.getValue()), QuickStore.player.getUniqueID());
                 }

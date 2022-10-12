@@ -1,36 +1,156 @@
 package com.klnon.quickstore.utils;
 
-import com.klnon.quickstore.utils.model.ContainerInformation;
+import com.klnon.quickstore.QuickStore;
+import com.klnon.quickstore.config.StoreConfig;
+import com.klnon.quickstore.gui.render.Render;
+import com.klnon.quickstore.gui.render.RenderEnqueue;
+import com.klnon.quickstore.keybinding.KeyBindings;
+import com.klnon.quickstore.model.BlockData;
+import com.klnon.quickstore.model.ContainerInformation;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author KlNon
- * @version 1.0
- * @className Utils
- * @description
- * @date 2022/10/11 10:31
- **/
+import static com.klnon.quickstore.QuickStore.keyIsDown;
+
 public class Utils {
 
-    public static String MOD_ID = "quickstore";
-    
-    public static List<ContainerInformation> getNearbyContainers(PlayerEntity player, double rangeBonus) {
+    private static BlockData blockData;
+    private static boolean quickSee = false; // Off by default
+    private static Vector3i lastPlayerPos = null;
+    public static final String MOD_ID = "quickstore";
+
+    public static final String PREFIX_GUI = String.format("%s:textures/gui/", MOD_ID);
+
+    private static final int[] distanceList = new int[] {2, 4, 6, 8, 12, 16, 24, 30};
+
+    public static ArrayList<Item> blackList = new ArrayList<Item>() {{
+        add(Items.AIR);
+        add(Items.BEDROCK);
+        add(Items.STONE);
+        add(Items.GRASS);
+        add(Items.DIRT);
+    }};
+
+    public static void quickSee(){
+        if (!keyIsDown)
+            QuickStore.keyIsDown = true;
+    }
+
+    public static BlockData getBlockData() {
+        return blockData;
+    }
+
+    public static void setBlockData(BlockData blockData) {
+        Utils.blockData = blockData;
+    }
+
+    public static double blockDistance(BlockPos positionA, BlockPos positionB) {
+        //TODO 距离不知道对不对
+        return positionA.distanceSq(positionB.getX(), positionB.getY(), positionB.getZ(),false);
+    }
+
+    public static void sendCommand() {
+        assert (Minecraft.getInstance()).player != null;
+        (Minecraft.getInstance()).player.sendChatMessage("/quickstore");
+    }
+
+    public static PlayerEntity getPlayer() {
+        return Minecraft.getInstance().player;
+    }
+
+    public static void storeIntoChests() {
+        QuickStore.player = getPlayer();
+        sendCommand();
+    }
+
+    public static int getRadius() { return distanceList[StoreConfig.general.distance.get()]; }
+
+    public static boolean isKeyPressed() {
+        return KeyBindings.toggleStore.getKeyBinding().isPressed();
+    }
+
+    public static boolean isKeyDown() {
+        return KeyBindings.toggleStore.getKeyBinding().isKeyDown();
+    }
+
+
+    public static boolean isQuickSeeActive() {
+        return quickSee && Minecraft.getInstance().world != null && Minecraft.getInstance().player != null;
+    }
+
+    private static boolean playerHasMoved() {
+        if (Minecraft.getInstance().player == null)
+            return false;
+
+        return lastPlayerPos == null
+                || lastPlayerPos.getX() != Minecraft.getInstance().player.getPosition().getX()
+                || lastPlayerPos.getY() != Minecraft.getInstance().player.getPosition().getY()
+                || lastPlayerPos.getZ() != Minecraft.getInstance().player.getPosition().getZ();
+    }
+
+    private static void updatePlayerPosition()
+    {
+        assert Minecraft.getInstance().player != null;
+        lastPlayerPos = Minecraft.getInstance().player.getPosition();
+    }
+
+    public static synchronized void requestBlockFinder( boolean force )
+    {
+        if ( isQuickSeeActive() && (force || playerHasMoved()) ) // world/player check done by xrayActive()
+        {
+            updatePlayerPosition(); // since we're about to run, update the last known position
+            Region region = new Region( lastPlayerPos, getRadius() ); // the region to scan for syncRenderList
+            Util.getServerExecutor().execute(new RenderEnqueue(region));
+        }
+    }
+
+    public static void toggleQuickSee()
+    {
+        if ( !quickSee) // enable drawing
+        {
+            Render.syncRenderList.clear(); // first, clear the buffer
+            quickSee = true; // then, enable drawing
+            requestBlockFinder( true ); // finally, force a refresh
+
+            if( !StoreConfig.general.showOverlay.get() && Minecraft.getInstance().player != null )
+                Minecraft.getInstance().player.sendStatusMessage(new TranslationTextComponent("xray.toggle.activated"), false);
+        }
+        else // disable drawing
+        {
+            if( !StoreConfig.general.showOverlay.get() && Minecraft.getInstance().player != null )
+                Minecraft.getInstance().player.sendStatusMessage(new TranslationTextComponent("xray.toggle.deactivated"), false);
+
+            quickSee = false;
+        }
+    }
+
+
+    public static List<ContainerInformation> getNearbyContainers(PlayerEntity player) {
         BlockPos playerPosition = player.getPosition();
         List<ChestTileEntity> chests = new ArrayList<>();
         //TODO 可能有误
-        double range = PlayerEntity.getRenderDistanceWeight() + rangeBonus;
+        double range = distanceList[StoreConfig.general.distance.get()];
         for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
-            if (tileEntity instanceof ChestTileEntity && blockDistance(playerPosition, tileEntity.getPos()) < range)
-                chests.add((ChestTileEntity) tileEntity);
+            if (tileEntity instanceof ChestTileEntity )
+//                && blockDistance(playerPosition, tileEntity.getPos()) < range
+                if(Math.abs(playerPosition.getX()-tileEntity.getPos().getX())<=range
+                        &&Math.abs(playerPosition.getY()-tileEntity.getPos().getY())<=range
+                        &&Math.abs(playerPosition.getZ()-tileEntity.getPos().getZ())<=range){
+                    chests.add((ChestTileEntity) tileEntity);
+                }
         }
-        List<ChestTileEntity> ignoredChests = new ArrayList<>();
         List<ContainerInformation> containers = new ArrayList<>();
         for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
             if (tileEntity instanceof IInventory && !(tileEntity instanceof ChestTileEntity) && blockDistance(playerPosition, tileEntity.getPos()) < range) {
@@ -47,35 +167,11 @@ public class Utils {
             }
         }
         for (ChestTileEntity chest : chests) {
-            if (!ignoredChests.contains(chest)) {
-                boolean addThis = true;
-                ContainerInformation ci = new ContainerInformation();
-                ci.ignoredSlot = -1000;
-                ci.chest1 = chest;
-//                //TODO 检查相邻的箱子
-//                chest.checkForAdjacentChests();
-//                if (chest.adjacentChestXNeg != null) {
-//                    addThis = false;
-//                } else if (chest.adjacentChestXPos != null) {
-//                    ci.chest2 = chest.adjacentChestXPos;
-//                } else if (chest.adjacentChestZNeg != null) {
-//                    addThis = false;
-//                } else if (chest.adjacentChestZPos != null) {
-//                    ci.chest2 = chest.adjacentChestZPos;
-//                }
-                if (addThis) {
-                    if (ci.chest2 != null)
-                        ignoredChests.add(ci.chest2);
-                    containers.add(ci);
-                }
-            }
+            ContainerInformation ci = new ContainerInformation();
+            ci.ignoredSlot = -1000;
+            ci.chest1 = chest;
+            containers.add(ci);
         }
         return containers;
     }
-
-    public static double blockDistance(BlockPos positionA, BlockPos positionB) {
-        //TODO 距离不知道对不对
-        return positionA.distanceSq(positionB.getX(), positionB.getY(), positionB.getZ(),false);
-    }
-
 }

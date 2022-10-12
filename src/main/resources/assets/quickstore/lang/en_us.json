@@ -9,13 +9,18 @@
         
   "keys.quickstore.store":"Store inventory into nearby chests.",
   "keys.quickstore.title":"Quick Store",
-  
-  
+  "keys.quickstore.quicksee":"Quick See",
+  "keys.quickstore.gui":"Open Gui",
+
+
   "config.quickstore.general.banitems":"Items that will not be stored.",
   "config.quickstore.general.singleenable":"Items like tools and weapons will be stored in single stacks.",
   "config.quickstore.general.slot":"The first few slots will not be stored.",
   "config.quickstore.general.item.slot":"Slots to keep food and torches.",
   "config.quickstore.general.detailinfoenable":"Show the number of items stored.",
   "config.quickstore.general.fullinfoenable":"Showcase full of boxes.",
-  "config.quickstore.general.distance": "distance"
+  "config.quickstore.general.distance": "distance",
+
+  "quickstore.debug.init": "QuickStore Init",
+  "quickstore.quicksee.overlay": "quicksee active"
 }

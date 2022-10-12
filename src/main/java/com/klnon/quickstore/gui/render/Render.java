@@ -1,5 +1,6 @@
 package com.klnon.quickstore.gui.render;
 
+import com.klnon.quickstore.config.StoreConfig;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -24,7 +25,7 @@ public class Render
     private static final int GL_FILL = 6914;
     private static final int GL_LINES = 1;
 
-    static void renderBlocks(RenderWorldLastEvent event) {
+    public static void renderBlocks(RenderWorldLastEvent event) {
         Vector3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
 
         MatrixStack stack = event.getMatrixStack();
@@ -110,7 +111,7 @@ public class Render
                 RenderSystem.polygonMode( GL_FRONT_AND_BACK, GL_LINE );
                 RenderSystem.blendFunc( GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA );
                 RenderSystem.enableBlend();
-                RenderSystem.lineWidth( (float) Configuration.general.outlineThickness.get().doubleValue() );
+                RenderSystem.lineWidth( (float) StoreConfig.general.outlineThickness.get().doubleValue() );
             }
 
             @Override
@@ -134,7 +135,7 @@ public class Render
             {}
         };
 
-        private Profile() {}
+        Profile() {}
         public abstract void apply();
         public abstract void clean();
     }
