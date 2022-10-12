@@ -46,18 +46,12 @@ public class QuickStore {
 
     public static boolean keyIsDown = false;
 
-    public static float nextUpdateCooldown = 0.5F;
-
-    public static float lostItemsCheckCooldown;
-
-    public static int leftItemChecks = 0;
-
-
     public static List<Item> currentItems;
 
     public static List<ContainerInformation> nearbyContainers;
 
     public static Map<String, Integer> storedItems=new HashMap<>();
+
 
 
 

@@ -1,14 +1,12 @@
 package com.klnon.quickstore.gui;
 
 import com.klnon.quickstore.QuickStore;
-import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -17,10 +15,8 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
+import javax.swing.text.Position;
 import java.awt.*;
-import java.util.List;
-import java.util.Map;
-
 import static com.klnon.quickstore.keyBoard.KeyBoardInput.storeKey;
 
 /**
@@ -52,6 +48,8 @@ public class GuiMethods {
 
 
     public void drawBoundingBox(Vector3d player_pos, Vector3d posA, Vector3d posB, boolean smooth, float width) {
+        posA = new Vector3d(posA.x, (int)(posA.y - 1), posA.z);
+        posB = new Vector3d(posB.x, (int)(posB.y - 1), posB.z);
         Color c = new Color(156, 255, 149, 255);
         GL11.glColor4d(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
         GL11.glLineWidth(width);
@@ -117,11 +115,12 @@ public class GuiMethods {
             return;
         if (isKeyDown()) {
             //TODO 可能出错
-//            evt.getPartialTicks();
             Vector3d pos = QuickStore.player.getEyePosition(evt.getPartialTicks());
             startDrawing(pos);
-            for (int n = 0; n < QuickStore.nearbyContainers.size(); n++)
+            for (int n = 0; n < QuickStore.nearbyContainers.size(); n++){
+//                Minecraft.getInstance().player.sendMessage(new TranslationTextComponent(QuickStore.nearbyContainers.get(n).getBoundsStart()+" "+QuickStore.nearbyContainers.get(n).getBoundsEnd()),getPlayer().getUniqueID());
                 drawBoundingBox(pos, QuickStore.nearbyContainers.get(n).getBoundsStart(), QuickStore.nearbyContainers.get(n).getBoundsEnd(), true, 6.0F);
+            }
             endDrawing();
         }
     }
@@ -146,55 +145,17 @@ public class GuiMethods {
 
     public void storeIntoChests() {
         QuickStore.player = getPlayer();
-        QuickStore.currentItems = Utils.getCurrentItems(QuickStore.player);
-        QuickStore.leftItemChecks = 1;
-        QuickStore.lostItemsCheckCooldown = 0.75F;
         sendCommand();
     }
 
     @SubscribeEvent
     public void onTickEvent(TickEvent.PlayerTickEvent event) {
-        if (isKeyDown()) {
-            QuickStore.keyIsDown = true;
+        if (!isKeyPressed() && QuickStore.keyIsDown) {
             QuickStore.player = getPlayer();
-            if (QuickStore.nextUpdateCooldown <= 0.0F) {
-                QuickStore.nearbyContainers = Utils.getNearbyContainers(QuickStore.player, 50.0F);
-                QuickStore.nextUpdateCooldown = 0.14F;
-            } else {
-                QuickStore.nextUpdateCooldown -= 0.05F;
-            }
-        } else if (QuickStore.keyIsDown) {
-            QuickStore.keyIsDown = false;
+            QuickStore.nearbyContainers = Utils.getNearbyContainers(QuickStore.player, 50.0F);
             storeIntoChests();
+            QuickStore.keyIsDown = false;
         }
-        if (QuickStore.currentItems != null && QuickStore.leftItemChecks > 0)
-            if (QuickStore.lostItemsCheckCooldown <= 0.0F) {
-                QuickStore.lostItemsCheckCooldown = 0.2F;
-                QuickStore.leftItemChecks--;
-                List<Item> newItems = Utils.getCurrentItems(QuickStore.player);
-                try {
-                    Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("commands.quickstore.containers", QuickStore.nearbyContainers.size()), QuickStore.player.getUniqueID());
-                    if (newItems.size() < QuickStore.currentItems.size()) {
-                        Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("commands.quickstore.stored", (QuickStore.currentItems.size() - newItems.size())), QuickStore.player.getUniqueID());
-
-                        if (StoreConfig.detailInfoEnable.get()) {
-                            for (Map.Entry<String, Integer> entry : QuickStore.storedItems.entrySet())
-                                Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("commands.quickstore.storeditems", entry.getKey(), entry.getValue()), QuickStore.player.getUniqueID());
-                            QuickStore.storedItems.clear();
-                        }
-                        //TODO 添加声音
-//                        (Minecraft.getInstance()).player.playSound(Objects.requireNonNull(SoundEvent.REGISTRY.getObjectById(76)), 1.0F, 2.0F);
-                        QuickStore.leftItemChecks = 0;
-                    } else if (QuickStore.leftItemChecks <= 0) {
-                        Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("commands.quickstore.nostored"), QuickStore.player.getUniqueID());
-//                        (Minecraft.getInstance()).player.playSound(Objects.requireNonNull(SoundEvent.REGISTRY.getObjectById(76)), 1.0F, 0.55F);
-                    }
-                } catch (Exception e) {
-                    Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("commands.quickstore.wait"), QuickStore.player.getUniqueID());
-                }
-            } else {
-                QuickStore.lostItemsCheckCooldown -= 0.05F;
-            }
     }
 
     @SubscribeEvent

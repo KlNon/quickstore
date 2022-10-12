@@ -57,7 +57,7 @@ public class Utils {
                 ContainerInformation ci = new ContainerInformation();
                 ci.ignoredSlot = -1000;
                 ci.chest1 = chest;
-//                //检查相邻的箱子
+//                //TODO 检查相邻的箱子
 //                chest.checkForAdjacentChests();
 //                if (chest.adjacentChestXNeg != null) {
 //                    addThis = false;
@@ -76,20 +76,6 @@ public class Utils {
             }
         }
         return containers;
-    }
-
-
-    public static List<Item> getCurrentItems(PlayerEntity player) {
-        PlayerInventory inventory = player.inventory;
-        int inventorySize = inventory.getSizeInventory();
-        List<Item> playerItems = new ArrayList<>();
-        for (int n = 0; n < inventorySize; n++) {
-            ItemStack stack = player.inventory.getStackInSlot(n);
-            if (!stack.isEmpty() && (stack.getMaxStackSize() > 1 || StoreConfig.singleEnable.get()) && stack.getCount() > 0) {
-                playerItems.add(stack.getItem());
-            }
-        }
-        return playerItems;
     }
 
     public static double blockDistance(BlockPos positionA, BlockPos positionB) {

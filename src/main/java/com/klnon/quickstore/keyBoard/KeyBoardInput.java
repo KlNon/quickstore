@@ -49,6 +49,7 @@ public class KeyBoardInput {
     public static void onKeyboardInput(InputEvent.KeyInputEvent event) {
         if (storeKey.isPressed() && !keyIsDown) {
             assert Minecraft.getInstance().player != null;
+            QuickStore.keyIsDown = true;
             //TODO 不知道 proxy是否该去除
 //            proxy.onKeyPressed();
         }
