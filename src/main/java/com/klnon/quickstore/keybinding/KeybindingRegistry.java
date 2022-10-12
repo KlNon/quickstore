@@ -1,4 +1,4 @@
-package com.klnon.quickstore.keyBoard;
+package com.klnon.quickstore.keybinding;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,6 +17,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class KeybindingRegistry {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> ClientRegistry.registerKeyBinding(KeyBoardInput.storeKey));
+        event.enqueueWork(() -> ClientRegistry.registerKeyBinding(KeyBoardBindings.storeKey));
     }
 }

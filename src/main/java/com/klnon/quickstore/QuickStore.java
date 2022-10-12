@@ -1,15 +1,13 @@
 package com.klnon.quickstore;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.klnon.quickstore.command.QuickStoreCommand;
-import com.klnon.quickstore.config.StoreConfig;
-import com.klnon.quickstore.container.ContainerInformation;
-import com.klnon.quickstore.gui.ClientGui;
+import com.klnon.quickstore.config.Configuration;
+import com.klnon.quickstore.utils.model.ContainerInformation;
 import com.klnon.quickstore.gui.GuiMethods;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -21,7 +19,9 @@ import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -60,43 +60,13 @@ public class QuickStore {
 
     @SubscribeEvent
     public void preInit() {
-        // Register the setup method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        // Register the enqueueIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-        // Register the processIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
-        // Register the doClientStuff method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-
         MinecraftForge.EVENT_BUS.register(this);
+        //注册配置文件
         //TODO 按键注册可能要删除
 //        MinecraftForge.EVENT_BUS.register(proxy);
 //        proxy.preInit();
     }
 
-    private void setup(final FMLCommonSetupEvent event) {
-        // some preinit code
-        LOGGER.info("HELLO FROM PREINIT");
-        LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
-    }
-
-    private void doClientStuff(final FMLClientSetupEvent event) {
-        // do something that can only be done on the client
-        LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
-    }
-
-    private void enqueueIMC(final InterModEnqueueEvent event) {
-        // some example code to dispatch IMC to another mod
-        InterModComms.sendTo("test", "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
-    }
-
-    private void processIMC(final InterModProcessEvent event) {
-        // some example code to receive and process InterModComms from other mods
-        LOGGER.info("Got IMC {}", event.getIMCStream().
-                map(m->m.getMessageSupplier().get()).
-                collect(Collectors.toList()));
-    }
 
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
@@ -110,10 +80,9 @@ public class QuickStore {
                     .requires((commandSource) -> commandSource.hasPermissionLevel(0))
                     .executes(QuickStoreCommand.instance)
         );
-        player= GuiMethods.getPlayer();
-        player= Minecraft.getInstance().player;
-        dispatcher.register(Commands.literal("bs").redirect(cmd));
+        dispatcher.register(Commands.literal("qs").redirect(cmd));
         MinecraftForge.EVENT_BUS.register(new GuiMethods());
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Configuration.SPEC);
     }
 
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD

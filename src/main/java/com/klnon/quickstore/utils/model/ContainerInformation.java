@@ -1,4 +1,4 @@
-package com.klnon.quickstore.container;
+package com.klnon.quickstore.utils.model;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;

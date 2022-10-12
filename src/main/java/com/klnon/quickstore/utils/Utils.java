@@ -1,13 +1,8 @@
 package com.klnon.quickstore.utils;
 
-import com.klnon.quickstore.config.StoreConfig;
-import com.klnon.quickstore.container.ContainerInformation;
-import net.minecraft.client.Minecraft;
+import com.klnon.quickstore.utils.model.ContainerInformation;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;

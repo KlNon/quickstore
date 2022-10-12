@@ -8,16 +8,14 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
-import javax.swing.text.Position;
 import java.awt.*;
-import static com.klnon.quickstore.keyBoard.KeyBoardInput.storeKey;
+import static com.klnon.quickstore.keybinding.KeyBoardBindings.storeKey;
 
 /**
  * @author KlNon
@@ -115,7 +113,7 @@ public class GuiMethods {
             return;
         if (isKeyDown()) {
             //TODO 可能出错
-            Vector3d pos = QuickStore.player.getEyePosition(evt.getPartialTicks());
+            Vector3d pos = QuickStore.player.getClientEyePosition(evt.getPartialTicks());
             startDrawing(pos);
             for (int n = 0; n < QuickStore.nearbyContainers.size(); n++){
 //                Minecraft.getInstance().player.sendMessage(new TranslationTextComponent(QuickStore.nearbyContainers.get(n).getBoundsStart()+" "+QuickStore.nearbyContainers.get(n).getBoundsEnd()),getPlayer().getUniqueID());

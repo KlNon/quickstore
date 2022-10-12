@@ -4,13 +4,11 @@ import java.util.*;
 
 import com.klnon.quickstore.QuickStore;
 import com.klnon.quickstore.config.StoreConfig;
-import com.klnon.quickstore.container.ContainerInformation;
+import com.klnon.quickstore.utils.model.ContainerInformation;
 import com.klnon.quickstore.utils.Utils;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.sun.org.apache.xml.internal.security.utils.I18n;
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
