@@ -27,8 +27,6 @@ public class ClientProxy {
 
         eventBus.addListener(ClientProxy::onSetup);
 
-        //注册配置文件
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, StoreConfig.SPEC);
         MinecraftForge.EVENT_BUS.register(KeyBindings.class);
     }
 

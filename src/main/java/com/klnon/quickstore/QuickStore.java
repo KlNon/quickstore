@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.klnon.quickstore.command.QuickStoreCommand;
+import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.model.ContainerInformation;
 import com.klnon.quickstore.model.Events;
 import com.mojang.brigadier.CommandDispatcher;
@@ -22,6 +23,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,6 +40,9 @@ public class QuickStore {
     public QuickStore() {
         ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
+        //注册配置文件
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, StoreConfig.SPEC);
+
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientProxy::setup);
     }
 
@@ -48,6 +53,7 @@ public class QuickStore {
 
     @SubscribeEvent
     public static void onServerStaring(RegisterCommandsEvent event) {
+
         //注册命令
         CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
         LiteralCommandNode<CommandSource> cmd = dispatcher.register(

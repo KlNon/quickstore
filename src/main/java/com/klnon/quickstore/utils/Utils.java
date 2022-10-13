@@ -163,17 +163,21 @@ public class Utils {
         }
         List<ContainerInformation> containers = new ArrayList<>();
         for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
-            if (tileEntity instanceof IInventory && !(tileEntity instanceof ChestTileEntity) && blockDistance(playerPosition, tileEntity.getPos()) < range) {
-                ContainerInformation ci = new ContainerInformation();
-                ci.inventoryObject = (IInventory) tileEntity;
-                ci.blockPositionOfInventory = tileEntity;
-                //为熔炉的时候
-                if (tileEntity instanceof net.minecraft.tileentity.FurnaceTileEntity) {
-                    ci.ignoredSlot = 2;
-                } else {
-                    ci.ignoredSlot = -1000;
+            if (tileEntity instanceof IInventory && !(tileEntity instanceof ChestTileEntity)) {
+                if(Math.abs(playerPosition.getX()-tileEntity.getPos().getX())<=range
+                        &&Math.abs(playerPosition.getY()-tileEntity.getPos().getY())<=range
+                        &&Math.abs(playerPosition.getZ()-tileEntity.getPos().getZ())<=range) {
+                    ContainerInformation ci = new ContainerInformation();
+                    ci.inventoryObject = (IInventory) tileEntity;
+                    ci.blockPositionOfInventory = tileEntity;
+                    //为熔炉的时候
+                    if (tileEntity instanceof net.minecraft.tileentity.FurnaceTileEntity) {
+                        ci.ignoredSlot = 2;
+                    } else {
+                        ci.ignoredSlot = -1000;
+                    }
+                    containers.add(ci);
                 }
-                containers.add(ci);
             }
         }
         for (ChestTileEntity chest : chests) {
