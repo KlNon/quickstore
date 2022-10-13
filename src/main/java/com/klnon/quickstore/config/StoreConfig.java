@@ -22,7 +22,7 @@ public class StoreConfig {
             BUILDER.push("general");
             distance = BUILDER
                     .comment("距离")
-                    .defineInRange("distance", 0,0,9);
+                    .defineInRange("distance", 3,0,9);
 
             BanItems = BUILDER
                     .comment("全局黑名单:以下物品不会被贮藏,示例 minecraft:stick")
@@ -34,7 +34,7 @@ public class StoreConfig {
 
             itemSlot = BUILDER
                     .comment("玩家背包(36格)中有几格仅保存食物和火把,默认8,即玩家整个物品栏")
-                    .defineInRange("slot", 8, -1, 35);
+                    .defineInRange("itemslot", 8, -1, 35);
 
             itemSlotBan = BUILDER
                     .comment("局部黑名单:以下物品在ItemSlot的格子内不会被贮藏,示例 minecraft:torch")

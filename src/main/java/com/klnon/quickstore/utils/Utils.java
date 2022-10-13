@@ -9,6 +9,7 @@ import com.klnon.quickstore.model.BlockData;
 import com.klnon.quickstore.model.ContainerInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -18,11 +19,11 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.klnon.quickstore.QuickStore.keyIsDown;
 
 public class Utils {
 
@@ -30,6 +31,10 @@ public class Utils {
     private static boolean quickSee = false; // Off by default
     private static Vector3i lastPlayerPos = null;
     public static final String MOD_ID = "quickstore";
+
+    @OnlyIn(value = Dist.CLIENT)
+    public static PlayerEntity clientPlayer;
+    public static ServerPlayerEntity serverPlayer;
 
     public static final String PREFIX_GUI = String.format("%s:textures/gui/", MOD_ID);
 
@@ -42,11 +47,6 @@ public class Utils {
         add(Items.GRASS);
         add(Items.DIRT);
     }};
-
-    public static void quickSee(){
-        if (!keyIsDown)
-            QuickStore.keyIsDown = true;
-    }
 
     public static BlockData getBlockData() {
         return blockData;
@@ -62,17 +62,25 @@ public class Utils {
     }
 
     public static void sendCommand() {
-        assert (Minecraft.getInstance()).player != null;
         (Minecraft.getInstance()).player.sendChatMessage("/quickstore");
     }
 
-    public static PlayerEntity getPlayer() {
-        return Minecraft.getInstance().player;
+    public static ServerPlayerEntity getSPlayer() {
+        return serverPlayer;
     }
 
-    public static void storeIntoChests() {
-        QuickStore.player = getPlayer();
-        sendCommand();
+    public static void setSPlayer(ServerPlayerEntity serverPlayer) {
+        Utils.serverPlayer =serverPlayer;
+    }
+
+    @OnlyIn(value = Dist.CLIENT)
+    public static PlayerEntity getCPlayer() {
+        return clientPlayer;
+    }
+
+    @OnlyIn(value = Dist.CLIENT)
+    public static void setCPlayer(PlayerEntity clientPlayer) {
+        Utils.clientPlayer = clientPlayer;
     }
 
     public static int getRadius() { return distanceList[StoreConfig.general.distance.get()]; }
@@ -116,8 +124,10 @@ public class Utils {
         }
     }
 
+    @OnlyIn(value = Dist.CLIENT)
     public static void toggleQuickSee()
     {
+        Utils.clientPlayer=Minecraft.getInstance().player;
         if ( !quickSee) // enable drawing
         {
             Render.syncRenderList.clear(); // first, clear the buffer
@@ -125,19 +135,19 @@ public class Utils {
             requestBlockFinder( true ); // finally, force a refresh
 
             if( !StoreConfig.general.showOverlay.get() && Minecraft.getInstance().player != null )
-                Minecraft.getInstance().player.sendStatusMessage(new TranslationTextComponent("xray.toggle.activated"), false);
+                Minecraft.getInstance().player.sendStatusMessage(new TranslationTextComponent("quickstore.toggle.activated"), false);
         }
         else // disable drawing
         {
             if( !StoreConfig.general.showOverlay.get() && Minecraft.getInstance().player != null )
-                Minecraft.getInstance().player.sendStatusMessage(new TranslationTextComponent("xray.toggle.deactivated"), false);
+                Minecraft.getInstance().player.sendStatusMessage(new TranslationTextComponent("quickstore.toggle.deactivated"), false);
 
             quickSee = false;
         }
     }
 
 
-    public static List<ContainerInformation> getNearbyContainers(PlayerEntity player) {
+    public static List<ContainerInformation> getNearbyContainers(ServerPlayerEntity player) {
         BlockPos playerPosition = player.getPosition();
         List<ChestTileEntity> chests = new ArrayList<>();
         //TODO 可能有误

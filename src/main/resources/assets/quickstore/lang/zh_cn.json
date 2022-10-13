@@ -3,11 +3,15 @@
   "commands.quickstore.stored":"§3= §r%d §e物品已储存!",
   "commands.quickstore.nostored":"§3= §r§e没有物品被储存!",
   "commands.quickstore.nospace":"§3= §r§e箱子没有空间: [X:%s , Y:%s , Z:%s].",
-  "commands.quickstore.storeditems":"§3= §r[%s] §e储存了 [%d].",
+  "commands.quickstore.storeditems":"§3= §r%s §e储存了 [%d].",
   "commands.quickstore.des":" 将会把你的物品整理到附近的箱子",
   "commands.quickstore.wait":"请稍作等待.",
 
   "keys.quickstore.store":"将物品快速放入周围箱子.",
-  "keys.quickstore.title":"快速贮藏"
+  "keys.quickstore.title":"快速贮藏",
+  "keys.quickstore.quicksee":"快速查看",
+  "keys.quickstore.gui":"打开Gui",
 
+  "quickstore.debug.init": "快速贮藏初始化",
+  "quickstore.quicksee.overlay": "QuickSee 启动中"
 }

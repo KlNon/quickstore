@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.ekincan'
-version = '1.4'
+version = '1.5'
 
 java {
     archivesBaseName = 'quickstore'
@@ -150,11 +150,12 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-//task copyJarToBin {
-//    copy {
-//        from 'build/libs/quickstore-1.4.jar'
-//        into "E:/FILE/MC/Winter/.minecraft/versions/testForge/mods"
-//    }
-//}
+task copyJarToBin {
+    copy {
+        from 'build/libs/quickstore-1.4.jar'
+        into "E:/FILE/MC/Winter/.minecraft/versions/WinterRescue/mods"
+        into "E:/FILE/MC/MyServer/1.16.5/testServer/mods"
+    }
+}
 
-//task buildApp(dependsOn: [clean, jar, copyJarToBin])
+task buildApp(dependsOn: [clean, jar, copyJarToBin])

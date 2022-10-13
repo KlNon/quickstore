@@ -25,7 +25,7 @@ public class KeyBindings {
 
     private static List<KeyActionable> keyBindings = new ArrayList<>();
 
-    public static KeyActionable toggleStore = new KeyActionable(GLFW.GLFW_KEY_V, I18n.format("keys." + Utils.MOD_ID + ".title"), Utils::quickSee);
+    public static KeyActionable toggleStore = new KeyActionable(GLFW.GLFW_KEY_V, I18n.format("keys." + Utils.MOD_ID + ".title"), Utils::sendCommand);
     //TODO gui打开按钮
 //    public static KeyActionable toggleGui = new KeyActionable(GLFW.GLFW_KEY_B, I18n.format("keys." + Utils.MOD_ID + ".gui"), () -> Minecraft.getInstance().displayGuiScreen( new GuiSelectionScreen() ));
     public static final KeyBinding quickSee = new KeyBinding("keys." + Utils.MOD_ID + ".quicksee",

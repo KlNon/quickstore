@@ -10,8 +10,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -22,9 +22,10 @@ public class QuickStoreCommand implements Command<CommandSource> {
     public static QuickStoreCommand instance = new QuickStoreCommand();
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        //TODO asPlayer()可能BUG
-        PlayerEntity player = context.getSource().asPlayer();
+        ServerPlayerEntity player = context.getSource().asPlayer();
+        Utils.setSPlayer(player);
         List<ContainerInformation> containers = Utils.getNearbyContainers(player);
+        QuickStore.nearbyContainers = containers;
         PlayerInventory inventoryPlayer = player.inventory;
         int playerInventorySize = inventoryPlayer.getSizeInventory();
         List<String> BanItems = Collections.singletonList(StoreConfig.general.BanItems.get());
@@ -34,7 +35,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
 
             if (BanItems.contains(Objects.requireNonNull(playersItemStack.getItem().getRegistryName()).toString()))
                 continue;
-            if(inventorySlot <= StoreConfig.general.slot.get())
+            if (inventorySlot <= StoreConfig.general.slot.get())
                 continue;
             if (((playersItemStack.getItem().getFood() != null) || itemSlotBan.contains(playersItemStack.getItem().getRegistryName().toString())) && inventorySlot <= StoreConfig.general.itemSlot.get())
                 continue;
@@ -71,17 +72,18 @@ public class QuickStoreCommand implements Command<CommandSource> {
                                     newCountInContainer = containerStack.getMaxStackSize();
                                 int removedCountFromPlayer = newCountInContainer - oldCountInContainer;
                                 containerStack.setCount(newCountInContainer);
-                                int old_playerCount=playersItemStack.getCount();
+                                int old_playerCount = playersItemStack.getCount();
 
-                                String displayName=playersItemStack.getItem().toString();
+                                String displayName = playersItemStack.getTextComponent().getString();
+                                ;
                                 playersItemStack.setCount(playersItemStack.getCount() - removedCountFromPlayer);
-                                int playerCount=playersItemStack.getCount();
+                                int playerCount = playersItemStack.getCount();
                                 //统计贮藏物品,不统计空气
                                 if (StoreConfig.switches.detailInfoEnable.get()) {
                                     if (QuickStore.storedItems.containsKey(displayName)) {
-                                        QuickStore.storedItems.put(displayName, QuickStore.storedItems.get(displayName)+old_playerCount-playerCount);
+                                        QuickStore.storedItems.put(displayName, QuickStore.storedItems.get(displayName) + old_playerCount - playerCount);
                                     } else {
-                                        QuickStore.storedItems.put(displayName, old_playerCount-playerCount);
+                                        QuickStore.storedItems.put(displayName, old_playerCount - playerCount);
                                     }
                                 }
                                 if (playersItemStack.getCount() <= 0) {
@@ -95,14 +97,14 @@ public class QuickStoreCommand implements Command<CommandSource> {
                     if (freeSlotInventory == null && StoreConfig.switches.fullInfoEnable.get() && !ci.isFull) {
                         ci.isFull = true;
                         BlockPos pos = ci.chest1.getPos();
-                        context.getSource().sendFeedback(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), false);
+                        player.sendMessage(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), player.getUniqueID());
                     }
                     //
                     if (containsItem && !itemCompletlyAdded && freeSlotInventory != null) {
-                        if (StoreConfig.switches.detailInfoEnable.get()&& !playersItemStack.isEmpty()) {
-                            String displayName=playersItemStack.getTextComponent().getString();
+                        if (StoreConfig.switches.detailInfoEnable.get() && !playersItemStack.isEmpty()) {
+                            String displayName = playersItemStack.getTextComponent().getString();
                             if (QuickStore.storedItems.containsKey(displayName)) {
-                                QuickStore.storedItems.put(displayName, QuickStore.storedItems.get(displayName)+inventoryPlayer.getStackInSlot(inventorySlot).getCount());
+                                QuickStore.storedItems.put(displayName, QuickStore.storedItems.get(displayName) + inventoryPlayer.getStackInSlot(inventorySlot).getCount());
                             } else {
                                 QuickStore.storedItems.put(displayName, inventoryPlayer.getStackInSlot(inventorySlot).getCount());
                             }
@@ -116,25 +118,26 @@ public class QuickStoreCommand implements Command<CommandSource> {
         }
 
         try {
-            player.sendMessage(new TranslationTextComponent("commands.quickstore.containers", QuickStore.nearbyContainers.size()), QuickStore.player.getUniqueID());
+            player.sendMessage(new TranslationTextComponent("commands.quickstore.containers", QuickStore.nearbyContainers.size()), player.getUniqueID());
             if (QuickStore.storedItems.size() <= 0) {
-                player.sendMessage(new TranslationTextComponent("commands.quickstore.nostored"), QuickStore.player.getUniqueID());
+                player.sendMessage(new TranslationTextComponent("commands.quickstore.nostored"), player.getUniqueID());
             } else {
-                player.sendMessage(new TranslationTextComponent("commands.quickstore.stored", (QuickStore.storedItems.size())), QuickStore.player.getUniqueID());
+                player.sendMessage(new TranslationTextComponent("commands.quickstore.stored", (QuickStore.storedItems.size())), player.getUniqueID());
                 if (StoreConfig.switches.detailInfoEnable.get()) {
                     for (Map.Entry<String, Integer> entry : QuickStore.storedItems.entrySet())
-                        player.sendMessage(new TranslationTextComponent("commands.quickstore.storeditems", entry.getKey(), entry.getValue()), QuickStore.player.getUniqueID());
+                        player.sendMessage(new TranslationTextComponent("commands.quickstore.storeditems", entry.getKey(), entry.getValue()), player.getUniqueID());
                 }
                 //TODO 添加声音
 //                        (Minecraft.getInstance()).player.playSound(Objects.requireNonNull(SoundEvent.REGISTRY.getObjectById(76)), 1.0F, 2.0F);
             }
             QuickStore.storedItems.clear();
         } catch (Exception e) {
-            player.sendMessage(new TranslationTextComponent("commands.quickstore.wait"), QuickStore.player.getUniqueID());
+            e.printStackTrace();
         }
 
         //TODO 或者这里同步物品栏
 //        player.inventoryContainer.detectAndSendChanges();
-        return 0;
+
+        return Command.SINGLE_SUCCESS;
     }
 }

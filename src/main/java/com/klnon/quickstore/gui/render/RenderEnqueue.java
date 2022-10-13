@@ -93,7 +93,7 @@ public class RenderEnqueue implements Runnable
 
 								data = Utils.getBlockData();
 								// Reject blacklisted blocks
-								if( Utils.blackList.contains(currentState.getBlock().asItem()) || !(currentState.getBlock().getRegistryName().toString().equals(data.getBlockName())) )
+								if( Utils.blackList.contains(currentState.getBlock().asItem()) || !(currentState.getBlock().getRegistryName().toString().contains("chest")) )
 									continue;
 
 								if(!data.isDrawing()) // fail safe
