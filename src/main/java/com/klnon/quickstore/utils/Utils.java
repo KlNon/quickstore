@@ -8,6 +8,8 @@ import com.klnon.quickstore.gui.render.RenderEnqueue;
 import com.klnon.quickstore.keybinding.KeyBindings;
 import com.klnon.quickstore.model.BlockData;
 import com.klnon.quickstore.model.ContainerInformation;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -72,6 +74,8 @@ public class Utils {
         //TODO 可能出null错
         assert (Minecraft.getInstance()).player != null;
         (Minecraft.getInstance()).player.sendChatMessage("/quickstore");
+        requestBlockFinder(true); // finally, force a refresh
+
     }
 
     public static ServerPlayerEntity getSPlayer() {
