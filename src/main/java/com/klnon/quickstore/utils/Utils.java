@@ -74,8 +74,7 @@ public class Utils {
         //TODO 可能出null错
         assert (Minecraft.getInstance()).player != null;
         (Minecraft.getInstance()).player.sendChatMessage("/quickstore");
-        requestBlockFinder(true); // finally, force a refresh
-
+        requestBlockFinder(true); //refresh
     }
 
     public static ServerPlayerEntity getSPlayer() {
