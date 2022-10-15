@@ -67,6 +67,8 @@ public class Utils {
     }
 
     public static void sendCommand() {
+        Render.storedList.clear();
+        //刷新生成的箱子
         //TODO 可能出null错
         assert (Minecraft.getInstance()).player != null;
         (Minecraft.getInstance()).player.sendChatMessage("/quickstore");
@@ -133,6 +135,7 @@ public class Utils {
 
     @OnlyIn(value = Dist.CLIENT)
     public static void toggleQuickSee() {
+        Render.storedList.clear();
         Utils.clientPlayer = Minecraft.getInstance().player;
         if (!quickSee) // enable drawing
         {
@@ -161,30 +164,25 @@ public class Utils {
         for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
             if (tileEntity instanceof ChestTileEntity)
                 if (Math.abs(playerPosition.getX() - tileEntity.getPos().getX()) <= range
-                        && Math.abs(playerPosition.getY() - tileEntity.getPos().getY()) <= range
-                        && Math.abs(playerPosition.getZ() - tileEntity.getPos().getZ()) <= range) {
+                && Math.abs(playerPosition.getY() - tileEntity.getPos().getY()) <= range
+                && Math.abs(playerPosition.getZ() - tileEntity.getPos().getZ()) <= range) {
                     chests.add((ChestTileEntity) tileEntity);
                 }
-            if (tileEntity instanceof IInventory && !(tileEntity instanceof ChestTileEntity) && ((IInventory) tileEntity).getSizeInventory() > 12) {
+            if (tileEntity instanceof IInventory
+            && !(tileEntity instanceof ChestTileEntity)
+            && ((IInventory) tileEntity).getSizeInventory() > StoreConfig.general.checkSlot.get()) {
                 if (Math.abs(playerPosition.getX() - tileEntity.getPos().getX()) <= range
-                        && Math.abs(playerPosition.getY() - tileEntity.getPos().getY()) <= range
-                        && Math.abs(playerPosition.getZ() - tileEntity.getPos().getZ()) <= range) {
+                && Math.abs(playerPosition.getY() - tileEntity.getPos().getY()) <= range
+                && Math.abs(playerPosition.getZ() - tileEntity.getPos().getZ()) <= range) {
                     ContainerInformation ci = new ContainerInformation();
                     ci.inventoryObject = (IInventory) tileEntity;
                     ci.blockPositionOfInventory = tileEntity;
-                    //为熔炉的时候
-                    if (tileEntity instanceof net.minecraft.tileentity.FurnaceTileEntity) {
-                        ci.ignoredSlot = 2;
-                    } else {
-                        ci.ignoredSlot = -1000;
-                    }
                     containers.add(ci);
                 }
             }
         }
         for (ChestTileEntity chest : chests) {
             ContainerInformation ci = new ContainerInformation();
-            ci.ignoredSlot = -1000;
             ci.chest1 = chest;
             containers.add(ci);
         }

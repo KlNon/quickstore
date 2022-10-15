@@ -4,6 +4,8 @@
   "commands.quickstore.nostored":"§3= §r§e没有物品被储存!",
   "commands.quickstore.nospace":"§3= §r§e箱子没有空间: [X:%s , Y:%s , Z:%s].",
   "commands.quickstore.storeditems":"§3= §r%s §e储存了 [%d] 于 %s.",
+  "commands.quickstore.storeditems2":"§3= §r%s §e储存了 [%d]",
+  "commands.quickstore.see": "§3= 请移动以刷新视野.红色:满了的箱子,绿色:储存到的目标",
   "commands.quickstore.des":" 将会把你的物品整理到附近的箱子",
   "commands.quickstore.wait":"请稍作等待.",
 

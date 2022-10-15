@@ -1,4 +1,4 @@
-package com.klnon.quickstore.model;
+package com.klnon.quickstore;
 
 import com.klnon.quickstore.QuickStore;
 import com.klnon.quickstore.gui.render.Render;

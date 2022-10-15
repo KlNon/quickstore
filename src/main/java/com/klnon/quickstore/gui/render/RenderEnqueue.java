@@ -31,6 +31,13 @@ public class RenderEnqueue implements Runnable
 
 
 	private void blockFinder() {
+		//显示已储存的箱子
+		if(!Render.storedList.isEmpty())
+		{
+			Render.syncRenderList.clear();
+			Render.syncRenderList.addAll(Render.storedList);
+			return;
+		}
 
 		final World world = Minecraft.getInstance().world;
         final PlayerEntity player = Minecraft.getInstance().player;
@@ -121,6 +128,7 @@ public class RenderEnqueue implements Runnable
 
 	public static void checkBlock(BlockPos pos, BlockState state, boolean add )
 	{
+
 		if ( !Utils.isQuickSeeActive() || Utils.getBlockData()==null)
 		    return; // just pass
 

@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 
 import java.util.ArrayList;
@@ -20,11 +22,15 @@ public class Render
 {
     public static List<RenderBlockProps> syncRenderList = Collections.synchronizedList( new ArrayList<>() ); // this is accessed by threads
 
+    public static List<RenderBlockProps> storedList = Collections.synchronizedList( new ArrayList<>() ); // this is accessed by threads
+
+
     private static final int GL_FRONT_AND_BACK = 1032;
     private static final int GL_LINE = 6913;
     private static final int GL_FILL = 6914;
     private static final int GL_LINES = 1;
 
+    @OnlyIn(Dist.CLIENT)
     public static void renderBlocks(RenderWorldLastEvent event) {
         Vector3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
 
@@ -55,6 +61,7 @@ public class Render
         RenderSystem.popMatrix();
     }
 
+    @OnlyIn(Dist.CLIENT)
     private static void renderBlock(IVertexBuilder buffer, RenderBlockProps props, float opacity) {
         final float red = (props.getColor() >> 16 & 0xff) / 255f;
         final float green = (props.getColor() >> 8 & 0xff) / 255f;

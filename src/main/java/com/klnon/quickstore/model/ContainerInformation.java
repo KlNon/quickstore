@@ -3,6 +3,7 @@ package com.klnon.quickstore.model;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.ChestTileEntity;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerInformation {
     public ChestTileEntity chest1;
@@ -14,7 +15,6 @@ public class ContainerInformation {
     public TileEntity blockPositionOfInventory;
 
     public boolean isFull=false;
-    public int ignoredSlot = -100;
 
     public ChestTileEntity[] getChests() {
         if (this.chest2 != null) {
@@ -46,5 +46,12 @@ public class ContainerInformation {
             return chests;
         }
         return null;
+    }
+
+    public BlockPos getPos(){
+        if (this.blockPositionOfInventory != null) {
+            return this.blockPositionOfInventory.getPos();
+        }
+        return this.chest1.getPos();
     }
 }
