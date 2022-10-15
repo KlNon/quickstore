@@ -40,8 +40,11 @@ public class ContainerInformation {
             arrayOfIInventory[1] = this.chest2;
             return arrayOfIInventory;
         }
-        IInventory[] chests = new IInventory[1];
-        chests[0] = this.chest1;
-        return chests;
+        if (this.chest1 != null){
+            IInventory[] chests = new IInventory[1];
+            chests[0] = this.chest1;
+            return chests;
+        }
+        return null;
     }
 }

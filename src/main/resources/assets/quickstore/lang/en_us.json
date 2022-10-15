@@ -3,7 +3,7 @@
   "commands.quickstore.stored":"§3= %d Stacks stored.",
   "commands.quickstore.nostored":"§3= no items will be stored",
   "commands.quickstore.nospace":"§3= No space in chest: [X: %s, Y: %s, Z: %s].",
-  "commands.quickstore.storeditems":"§3= %s stored number %d.",
+  "commands.quickstore.storeditems":"§3= %s stored number %d in %s",
   "commands.quickstore.des":" Will sort your items into nearby chests.",
   "commands.quickstore.wait":" Please wait.",
         

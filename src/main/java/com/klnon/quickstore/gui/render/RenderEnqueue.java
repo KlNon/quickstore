@@ -46,6 +46,9 @@ public class RenderEnqueue implements Runnable
 		ResourceLocation block;
 		BlockData data;
 
+
+
+
 		// Loop on chunks (x, z)
 		for ( int chunkX = box.minChunkX; chunkX <= box.maxChunkX; chunkX++ )
 		{
@@ -81,6 +84,7 @@ public class RenderEnqueue implements Runnable
 					lowBoundY = (y < box.minY) ? box.minY - y : 0;
 					highBoundY = (y + 15 > box.maxY) ? box.maxY - y : 15;
 
+
 					// Now that we have an extend, let's check all its blocks
 					for ( int i = lowBoundX; i <= highBoundX; i++ ) {
 						for ( int j = lowBoundY; j <= highBoundY; j++ ) {
@@ -107,6 +111,8 @@ public class RenderEnqueue implements Runnable
 				}
 			}
 		}
+
+
 		final BlockPos playerPos = player.getPosition();
 		renderQueue.sort((t, t1) -> Double.compare(t1.getPos().distanceSq(playerPos), t.getPos().distanceSq((playerPos))));
 		Render.syncRenderList.clear();

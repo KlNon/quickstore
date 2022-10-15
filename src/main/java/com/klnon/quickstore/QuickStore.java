@@ -8,6 +8,7 @@ import com.klnon.quickstore.command.QuickStoreCommand;
 import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.model.ContainerInformation;
 import com.klnon.quickstore.model.Events;
+import com.klnon.quickstore.model.ItemInfo;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.CommandSource;
@@ -35,7 +36,12 @@ public class QuickStore {
 
     public static List<ContainerInformation> nearbyContainers;
 
-    public static Map<String, Integer> storedItems=new HashMap<>();
+    public static Map<String, ItemInfo> storedItems=new HashMap<>();
+
+    @SubscribeEvent
+    public void setup() {
+        MinecraftForge.EVENT_BUS.register(this);
+    }
 
     public QuickStore() {
         ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
@@ -47,21 +53,13 @@ public class QuickStore {
     }
 
     @SubscribeEvent
-    public void setup() {
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @SubscribeEvent
     public static void onServerStaring(RegisterCommandsEvent event) {
-
         //注册命令
         CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
-        LiteralCommandNode<CommandSource> cmd = dispatcher.register(
+        dispatcher.register(
                 Commands.literal("quickstore")
-                        .requires((commandSource) -> commandSource.hasPermissionLevel(0))
                         .executes(QuickStoreCommand.instance)
         );
-        dispatcher.register(Commands.literal("qs").redirect(cmd));
         MinecraftForge.EVENT_BUS.register(new Events());
     }
 
