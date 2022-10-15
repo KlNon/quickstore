@@ -128,7 +128,6 @@ public class RenderEnqueue implements Runnable
 
 	public static void checkBlock(BlockPos pos, BlockState state, boolean add )
 	{
-
 		if ( !Utils.isQuickSeeActive() || Utils.getBlockData()==null)
 		    return; // just pass
 

@@ -40,11 +40,13 @@ public class Events {
 
     @SubscribeEvent
     public static void placeItem(BlockEvent.EntityPlaceEvent event) {
+        Render.storedList.clear();
         RenderEnqueue.checkBlock(event.getPos(), event.getState(), true);
     }
 
     @SubscribeEvent
     public static void pickupItem(BlockEvent.BreakEvent event) {
+        Render.storedList.clear();
         RenderEnqueue.checkBlock(event.getPos(), event.getState(), false);
     }
 }
