@@ -8,6 +8,7 @@ import com.klnon.quickstore.command.QuickStoreCommand;
 import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.model.ContainerInformation;
 import com.klnon.quickstore.model.ItemInfo;
+import com.klnon.quickstore.networking.Networking;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -20,6 +21,7 @@ import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -44,6 +46,7 @@ public class QuickStore {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, StoreConfig.SPEC);
 
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientProxy::setup);
+
     }
 
     @SubscribeEvent
@@ -54,6 +57,7 @@ public class QuickStore {
                 Commands.literal("quickstore")
                         .executes(QuickStoreCommand.instance)
         );
+
         MinecraftForge.EVENT_BUS.register(new Events());
     }
 

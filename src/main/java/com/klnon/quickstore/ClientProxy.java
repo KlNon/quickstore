@@ -2,6 +2,7 @@ package com.klnon.quickstore;
 
 import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.keybinding.KeyBindings;
+import com.klnon.quickstore.networking.Networking;
 import com.klnon.quickstore.utils.Utils;
 import com.klnon.quickstore.model.BlockData;
 import net.minecraft.client.resources.I18n;

@@ -8,6 +8,8 @@ import com.klnon.quickstore.gui.render.Render;
 import com.klnon.quickstore.gui.render.RenderBlockProps;
 import com.klnon.quickstore.model.ContainerInformation;
 import com.klnon.quickstore.model.ItemInfo;
+import com.klnon.quickstore.networking.Networking;
+import com.klnon.quickstore.networking.SendPack;
 import com.klnon.quickstore.utils.Utils;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
@@ -19,6 +21,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 public class QuickStoreCommand implements Command<CommandSource> {
 
@@ -26,7 +29,6 @@ public class QuickStoreCommand implements Command<CommandSource> {
 
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        Render.syncRenderList.clear();
 
         ServerPlayerEntity player = context.getSource().asPlayer();
         List<ContainerInformation> containers = Utils.getNearbyContainers(player);
@@ -109,6 +111,8 @@ public class QuickStoreCommand implements Command<CommandSource> {
                             playersItemStack.setCount(playersItemStack.getCount() - removedCountFromPlayer);
 
                             int playerCount = playersItemStack.getCount();
+                            //箱子是否满了
+                            ci.isFull= playerCount != 0;
                             //统计贮藏物品,不统计空气
                             if (StoreConfig.switches.detailInfoEnable.get()) {
                                 if (QuickStore.storedItems.containsKey(displayName)) {
@@ -130,11 +134,10 @@ public class QuickStoreCommand implements Command<CommandSource> {
                         }
                     }
                     //如果箱子没有空间则提示
-                    if (includeItem && freeSlotInventory == null && StoreConfig.switches.fullInfoEnable.get() && !ci.isFull) {
-                        ci.isFull = true;
+                    if (includeItem && freeSlotInventory == null && StoreConfig.switches.fullInfoEnable.get() && ci.isFull) {
                         BlockPos pos = ci.getPos();
 //                        player.sendMessage(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), player.getUniqueID());
-                        Render.storedList.add(new RenderBlockProps(pos, 16711680));
+                        Utils.storedList.add(new RenderBlockProps(pos, StoreConfig.general.RED.get()));
                     }
                     //
                     if (containsItem && !itemCompletlyAdded && freeSlotInventory != null) {
@@ -156,6 +159,16 @@ public class QuickStoreCommand implements Command<CommandSource> {
                     }
                 }
             }
+        }
+        //发包给客户端,渲染相关箱子
+        if(!player.world.isRemote)
+            for (RenderBlockProps blockProps : Utils.storedList) {
+            Networking.INSTANCE.send(
+                    PacketDistributor.PLAYER.with(
+                            () ->  player
+                    ),
+                    new SendPack(blockProps)
+            );
         }
 
         commandFeedback(player);
@@ -198,7 +211,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
         BlockPos pos = ci.getPos();
         if (!itemInfo.isSamePosition(pos))
             itemInfo.getPosition().add(pos);
-        Render.storedList.add(new RenderBlockProps(ci.getPos(), 63232));
+        Utils.storedList.add(new RenderBlockProps(ci.getPos(), StoreConfig.general.GREEN.get()));
         QuickStore.storedItems.put(displayName, itemInfo);
     }
 
@@ -206,7 +219,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
         List<BlockPos> blockPos = new ArrayList<>();
         BlockPos pos = ci.getPos();
         blockPos.add(pos);
-        Render.storedList.add(new RenderBlockProps(ci.getPos(), 63232));
+        Utils.storedList.add(new RenderBlockProps(ci.getPos(), StoreConfig.general.GREEN.get()));
         return blockPos;
     }
 

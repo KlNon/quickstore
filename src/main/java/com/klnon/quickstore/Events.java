@@ -28,6 +28,8 @@ public class Events {
     @SubscribeEvent
     public static void tickEnd(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
+            if(!Utils.storedList.isEmpty())
+                Utils.requestBlockFinder(true); //refresh
             Utils.requestBlockFinder(false);
         }
     }
@@ -40,13 +42,13 @@ public class Events {
 
     @SubscribeEvent
     public static void placeItem(BlockEvent.EntityPlaceEvent event) {
-        Render.storedList.clear();
+        Utils.storedList.clear();
         RenderEnqueue.checkBlock(event.getPos(), event.getState(), true);
     }
 
     @SubscribeEvent
     public static void pickupItem(BlockEvent.BreakEvent event) {
-        Render.storedList.clear();
+        Utils.storedList.clear();
         RenderEnqueue.checkBlock(event.getPos(), event.getState(), false);
     }
 }

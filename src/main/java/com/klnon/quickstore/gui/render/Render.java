@@ -22,8 +22,6 @@ public class Render
 {
     public static List<RenderBlockProps> syncRenderList = Collections.synchronizedList( new ArrayList<>() ); // this is accessed by threads
 
-    public static List<RenderBlockProps> storedList = Collections.synchronizedList( new ArrayList<>() ); // this is accessed by threads
-
 
     private static final int GL_FRONT_AND_BACK = 1032;
     private static final int GL_LINE = 6913;

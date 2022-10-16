@@ -32,10 +32,10 @@ public class RenderEnqueue implements Runnable
 
 	private void blockFinder() {
 		//显示已储存的箱子
-		if(!Render.storedList.isEmpty())
+		if(!Utils.storedList.isEmpty())
 		{
 			Render.syncRenderList.clear();
-			Render.syncRenderList.addAll(Render.storedList);
+			Render.syncRenderList.addAll(Utils.storedList);
 			return;
 		}
 

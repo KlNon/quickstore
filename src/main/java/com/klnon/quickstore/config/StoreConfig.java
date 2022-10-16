@@ -14,6 +14,8 @@ public class StoreConfig {
         public final ForgeConfigSpec.IntValue slot;
         public final ForgeConfigSpec.IntValue itemSlot;
         public final ForgeConfigSpec.IntValue checkSlot;
+        public final ForgeConfigSpec.IntValue GREEN;
+        public final ForgeConfigSpec.IntValue RED;
         public final ForgeConfigSpec.ConfigValue<String> BanItems;
         public final ForgeConfigSpec.ConfigValue<String> itemSlotBan;
         public final ForgeConfigSpec.BooleanValue showOverlay;
@@ -41,6 +43,14 @@ public class StoreConfig {
             checkSlot = BUILDER
                     .comment("检查格子数大于checkSlot的箱子")
                     .defineInRange("checkSlot", 12, 0, 100);
+
+            GREEN = BUILDER
+                    .comment("颜色(默认绿色)")
+                    .defineInRange("green", 63232, 0, 100000000);
+
+            RED = BUILDER
+                    .comment("颜色(默认红色)")
+                    .defineInRange("red", 16711680, 0, 100000000);
 
             itemSlotBan = BUILDER
                     .comment("局部黑名单:以下物品在ItemSlot的格子内不会被贮藏,示例 minecraft:torch")

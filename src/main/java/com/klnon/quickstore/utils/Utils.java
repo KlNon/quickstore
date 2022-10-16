@@ -8,6 +8,8 @@ import com.klnon.quickstore.gui.render.RenderEnqueue;
 import com.klnon.quickstore.keybinding.KeyBindings;
 import com.klnon.quickstore.model.BlockData;
 import com.klnon.quickstore.model.ContainerInformation;
+import com.klnon.quickstore.networking.Networking;
+import com.klnon.quickstore.networking.SendPack;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -24,9 +26,11 @@ import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Utils {
@@ -46,6 +50,8 @@ public class Utils {
     public static final String PREFIX_GUI = String.format("%s:textures/gui/", MOD_ID);
 
     private static final int[] distanceList = new int[]{2, 4, 6, 8, 12, 16, 24, 30};
+
+    public static List<RenderBlockProps> storedList = Collections.synchronizedList( new ArrayList<>() ); // this is accessed by threads
 
     public static ArrayList<Item> blackList = new ArrayList<Item>() {{
         add(Items.AIR);
@@ -68,14 +74,6 @@ public class Utils {
         return positionA.distanceSq(positionB.getX(), positionB.getY(), positionB.getZ(), false);
     }
 
-    public static void sendCommand() {
-        Render.storedList.clear();
-        //刷新生成的箱子
-        //TODO 可能出null错
-        assert (Minecraft.getInstance()).player != null;
-        (Minecraft.getInstance()).player.sendChatMessage("/quickstore");
-        requestBlockFinder(true); //refresh
-    }
 
     public static ServerPlayerEntity getSPlayer() {
         return serverPlayer;
@@ -136,9 +134,20 @@ public class Utils {
         }
     }
 
+    public static void sendCommand() {
+        Render.syncRenderList.clear();
+        Utils.storedList.clear();
+        //刷新生成的箱子
+        //TODO 可能出null错
+        assert (Minecraft.getInstance()).player != null;
+        (Minecraft.getInstance()).player.sendChatMessage("/quickstore");
+
+        requestBlockFinder(true); //refresh
+    }
+
     @OnlyIn(value = Dist.CLIENT)
     public static void toggleQuickSee() {
-        Render.storedList.clear();
+        Utils.storedList.clear();
         Utils.clientPlayer = Minecraft.getInstance().player;
         if (!quickSee) // enable drawing
         {
