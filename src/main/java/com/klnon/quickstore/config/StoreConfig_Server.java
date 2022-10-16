@@ -19,7 +19,7 @@ public class StoreConfig_Server {
             BUILDER.push("general");
             distance = BUILDER
                     .comment("距离")
-                    .defineInRange("distance", 1,0,9);
+                    .defineInRange("distance", 2,0,9);
 
             BanItems = BUILDER
                     .comment("全局黑名单:以下物品不会被贮藏,示例 minecraft:stick")

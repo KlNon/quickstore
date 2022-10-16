@@ -10,6 +10,7 @@ import com.klnon.quickstore.model.ContainerInformation;
 import com.klnon.quickstore.model.ItemInfo;
 import com.klnon.quickstore.networking.Networking;
 import com.klnon.quickstore.networking.StoredChestsPack;
+import com.klnon.quickstore.utils.Utils_Client;
 import com.klnon.quickstore.utils.Utils_Server;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
@@ -200,7 +201,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                 //TODO 添加声音
 //                        (Minecraft.getInstance()).player.playSound(Objects.requireNonNull(SoundEvent.REGISTRY.getObjectById(76)), 1.0F, 2.0F);
             }
-            if (Utils_Server.isQuickSeeActive())
+            if (Utils_Client.isQuickSeeActive())
                 player.sendMessage(new TranslationTextComponent("commands.quickstore.see"), player.getUniqueID());
             QuickStore.storedItems.clear();
         } catch (Exception e) {
