@@ -1,4 +1,4 @@
-package com.klnon.quickstore.utils;
+package com.klnon.quickstore.model;
 
 import net.minecraft.util.math.vector.Vector3i;
 

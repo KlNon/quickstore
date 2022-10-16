@@ -1,7 +1,8 @@
 package com.klnon.quickstore.gui;
 
-import com.klnon.quickstore.config.StoreConfig;
-import com.klnon.quickstore.utils.Utils;
+import com.klnon.quickstore.config.StoreConfig_Client;
+import com.klnon.quickstore.utils.Utils_Client;
+import com.klnon.quickstore.utils.Utils_Server;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -14,15 +15,15 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = Utils.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = Utils_Server.MOD_ID, value = Dist.CLIENT)
 public class GuiOverlay {
-    private static final ResourceLocation circle = new ResourceLocation(Utils.PREFIX_GUI + "circle.png");
+    private static final ResourceLocation circle = new ResourceLocation(Utils_Server.PREFIX_GUI + "circle.png");
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void RenderGameOverlayEvent(RenderGameOverlayEvent event) {
         // Draw Indicator
-        if(!Utils.isQuickSeeActive() || !StoreConfig.general.showOverlay.get() || event.isCanceled() || event.getType() != RenderGameOverlayEvent.ElementType.TEXT )
+        if(!Utils_Client.isQuickSeeActive() || !StoreConfig_Client.general.showOverlay.get() || event.isCanceled() || event.getType() != RenderGameOverlayEvent.ElementType.TEXT )
             return;
 
         RenderSystem.color3f(0, 255, 0);

@@ -1,19 +1,15 @@
 package com.klnon.quickstore;
 
-import com.klnon.quickstore.config.StoreConfig;
 import com.klnon.quickstore.keybinding.KeyBindings;
-import com.klnon.quickstore.networking.Networking;
-import com.klnon.quickstore.utils.Utils;
+import com.klnon.quickstore.utils.Utils_Client;
+import com.klnon.quickstore.utils.Utils_Server;
 import com.klnon.quickstore.model.BlockData;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -37,7 +33,7 @@ public class ClientProxy {
 
         ItemStack itemStack = new ItemStack(ForgeRegistries.BLOCKS.getValue(new ResourceLocation("minecraft:chest")),1);
         BlockData data=new BlockData("箱子", "minecraft:chest",42495,itemStack,true,11);
-        Utils.setBlockData(data);
+        Utils_Client.setBlockData(data);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.klnon.quickstore.keybinding;
 
-import com.klnon.quickstore.utils.Utils;
+import com.klnon.quickstore.utils.Utils_Client;
+import com.klnon.quickstore.utils.Utils_Server;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
@@ -21,14 +22,14 @@ import java.util.List;
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class KeyBindings {
 
-    private static final String CATEGORY = "keys." + Utils.MOD_ID + ".title";
+    private static final String CATEGORY = "keys." + Utils_Server.MOD_ID + ".title";
 
     private static List<KeyActionable> keyBindings = new ArrayList<>();
 
-    public static KeyActionable toggleStore = new KeyActionable(GLFW.GLFW_KEY_V, I18n.format("keys." + Utils.MOD_ID + ".title"), Utils::sendCommand);
+    public static KeyActionable toggleStore = new KeyActionable(GLFW.GLFW_KEY_V, I18n.format("keys." + Utils_Server.MOD_ID + ".title"), Utils_Server::sendCommand);
     //TODO gui打开按钮
-//    public static KeyActionable toggleGui = new KeyActionable(GLFW.GLFW_KEY_B, I18n.format("keys." + Utils.MOD_ID + ".gui"), () -> Minecraft.getInstance().displayGuiScreen( new GuiSelectionScreen() ));
-    public static final KeyBinding quickSee = new KeyBinding("keys." + Utils.MOD_ID + ".quicksee",
+//    public static KeyActionable toggleGui = new KeyActionable(GLFW.GLFW_KEY_B, I18n.format("keys." + Utils_Server.MOD_ID + ".gui"), () -> Minecraft.getInstance().displayGuiScreen( new GuiSelectionScreen() ));
+    public static final KeyBinding quickSee = new KeyBinding("keys." + Utils_Server.MOD_ID + ".quicksee",
             KeyConflictContext.IN_GAME,
             KeyModifier.CONTROL,
             InputMappings.Type.KEYSYM,
@@ -37,7 +38,7 @@ public class KeyBindings {
 
     public static void setup() {
         keyBindings.add(toggleStore);
-        keyBindings.add(new KeyActionable(quickSee, Utils::toggleQuickSee));
+        keyBindings.add(new KeyActionable(quickSee, Utils_Client::toggleQuickSee));
 //        keyBindings.add(toggleGui);
 
         keyBindings.forEach(e -> ClientRegistry.registerKeyBinding(e.getKeyBinding()));

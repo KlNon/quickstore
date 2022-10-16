@@ -1,7 +1,8 @@
 package com.klnon.quickstore.gui.render;
 
-import com.klnon.quickstore.utils.Region;
-import com.klnon.quickstore.utils.Utils;
+import com.klnon.quickstore.model.Region;
+import com.klnon.quickstore.utils.Utils_Client;
+import com.klnon.quickstore.utils.Utils_Server;
 import com.klnon.quickstore.model.BlockData;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -32,10 +33,10 @@ public class RenderEnqueue implements Runnable
 
 	private void blockFinder() {
 		//显示已储存的箱子
-		if(!Utils.storedList.isEmpty())
+		if(!Utils_Server.storedList.isEmpty())
 		{
 			Render.syncRenderList.clear();
-			Render.syncRenderList.addAll(Utils.storedList);
+			Render.syncRenderList.addAll(Utils_Server.storedList);
 			return;
 		}
 
@@ -102,9 +103,9 @@ public class RenderEnqueue implements Runnable
 								if( block == null )
 									continue;
 
-								data = Utils.getBlockData();
+								data = Utils_Client.getBlockData();
 								// Reject blacklisted blocks
-								if( Utils.blackList.contains(currentState.getBlock().asItem()) || !(currentState.getBlock().getRegistryName().toString().contains("chest")) )
+								if( Utils_Server.blackList.contains(currentState.getBlock().asItem()) || !(currentState.getBlock().getRegistryName().toString().contains("chest")) )
 									continue;
 
 								if(!data.isDrawing()) // fail safe
@@ -128,7 +129,7 @@ public class RenderEnqueue implements Runnable
 
 	public static void checkBlock(BlockPos pos, BlockState state, boolean add )
 	{
-		if ( !Utils.isQuickSeeActive() || Utils.getBlockData()==null)
+		if ( !Utils_Client.isQuickSeeActive() || Utils_Client.getBlockData()==null)
 		    return; // just pass
 
 		// If we're removing then remove :D
@@ -141,7 +142,7 @@ public class RenderEnqueue implements Runnable
 		if( block == null )
 			return;
 
-		BlockData data = Utils.getBlockData();
+		BlockData data = Utils_Client.getBlockData();
 		if( data == null ||  !data.isDrawing() )
 			return;
 

@@ -3,14 +3,14 @@ package com.klnon.quickstore.command;
 import java.util.*;
 
 import com.klnon.quickstore.QuickStore;
-import com.klnon.quickstore.config.StoreConfig;
-import com.klnon.quickstore.gui.render.Render;
+import com.klnon.quickstore.config.StoreConfig_Client;
+import com.klnon.quickstore.config.StoreConfig_Server;
 import com.klnon.quickstore.gui.render.RenderBlockProps;
 import com.klnon.quickstore.model.ContainerInformation;
 import com.klnon.quickstore.model.ItemInfo;
 import com.klnon.quickstore.networking.Networking;
-import com.klnon.quickstore.networking.SendPack;
-import com.klnon.quickstore.utils.Utils;
+import com.klnon.quickstore.networking.StoredChestsPack;
+import com.klnon.quickstore.utils.Utils_Server;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -29,16 +29,17 @@ public class QuickStoreCommand implements Command<CommandSource> {
 
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
+        Utils_Server.storedList.clear();
 
         ServerPlayerEntity player = context.getSource().asPlayer();
-        List<ContainerInformation> containers = Utils.getNearbyContainers(player);
-        Utils.setSPlayer(player);
+        List<ContainerInformation> containers = Utils_Server.getNearbyContainers(player);
+        Utils_Server.setSPlayer(player);
         QuickStore.nearbyContainers = containers;
         PlayerInventory inventoryPlayer = player.inventory;
         int playerInventorySize = inventoryPlayer.getSizeInventory();
 
-        List<String> BanItems = Collections.singletonList(StoreConfig.general.BanItems.get());
-        List<String> itemSlotBan = Collections.singletonList(StoreConfig.general.itemSlotBan.get());
+        List<String> BanItems = Collections.singletonList(StoreConfig_Server.general.BanItems.get());
+        List<String> itemSlotBan = Collections.singletonList(StoreConfig_Server.general.itemSlotBan.get());
 
         //遍历玩家背包
         for (int inventorySlot = 0; inventorySlot < playerInventorySize; inventorySlot++) {
@@ -49,16 +50,16 @@ public class QuickStoreCommand implements Command<CommandSource> {
 
             if (BanItems.contains(Objects.requireNonNull(playersItemStack.getItem().getRegistryName()).toString()))
                 continue;
-            if (inventorySlot <= StoreConfig.general.slot.get())
+            if (inventorySlot <= StoreConfig_Server.general.slot.get())
                 continue;
-            if (((playersItemStack.getItem().getFood() != null) || itemSlotBan.contains(playersItemStack.getItem().getRegistryName().toString())) && inventorySlot <= StoreConfig.general.itemSlot.get())
+            if (((playersItemStack.getItem().getFood() != null) || itemSlotBan.contains(playersItemStack.getItem().getRegistryName().toString())) && inventorySlot <= StoreConfig_Server.general.itemSlot.get())
                 continue;
 
             //玩家背包不为空,这个在玩家背包的物品堆叠最大数量大于1,数量大于0, 不为在物品栏的食物和火把
             if (!playersItemStack.isEmpty()
-                    && (playersItemStack.getMaxStackSize() > 1 || StoreConfig.switches.singleEnable.get())
+                    && (playersItemStack.getMaxStackSize() > 1 || StoreConfig_Server.switches.singleEnable.get())
                     && playersItemStack.getCount() > 0
-                    && inventorySlot > StoreConfig.general.slot.get()) {
+                    && inventorySlot > StoreConfig_Server.general.slot.get()) {
 
                 //遍历附近的箱子
                 for (ContainerInformation ci : containers) {
@@ -114,7 +115,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                             //箱子是否满了
                             ci.isFull= playerCount != 0;
                             //统计贮藏物品,不统计空气
-                            if (StoreConfig.switches.detailInfoEnable.get()) {
+                            if (StoreConfig_Client.switches.detailInfoEnable.get()) {
                                 if (QuickStore.storedItems.containsKey(displayName)) {
                                     ItemInfo itemInfo = QuickStore.storedItems.get(displayName);
                                     itemInfo.setAmount(itemInfo.getAmount() + old_playerCount - playerCount);
@@ -134,14 +135,14 @@ public class QuickStoreCommand implements Command<CommandSource> {
                         }
                     }
                     //如果箱子没有空间则提示
-                    if (includeItem && freeSlotInventory == null && StoreConfig.switches.fullInfoEnable.get() && ci.isFull) {
+                    if (includeItem && freeSlotInventory == null && StoreConfig_Client.switches.fullInfoEnable.get() && ci.isFull) {
                         BlockPos pos = ci.getPos();
 //                        player.sendMessage(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), player.getUniqueID());
-                        Utils.storedList.add(new RenderBlockProps(pos, StoreConfig.general.RED.get()));
+                        Utils_Server.storedList.add(new RenderBlockProps(pos, StoreConfig_Client.general.RED.get()));
                     }
                     //
                     if (containsItem && !itemCompletlyAdded && freeSlotInventory != null) {
-                        if (StoreConfig.switches.detailInfoEnable.get() && !playersItemStack.isEmpty()) {
+                        if (StoreConfig_Client.switches.detailInfoEnable.get() && !playersItemStack.isEmpty()) {
                             String displayName = playersItemStack.getTextComponent().getString();
                             if (QuickStore.storedItems.containsKey(displayName)) {
                                 ItemInfo itemInfo = QuickStore.storedItems.get(displayName);
@@ -162,12 +163,12 @@ public class QuickStoreCommand implements Command<CommandSource> {
         }
         //发包给客户端,渲染相关箱子
         if(!player.world.isRemote)
-            for (RenderBlockProps blockProps : Utils.storedList) {
+            for (RenderBlockProps blockProps : Utils_Server.storedList) {
             Networking.INSTANCE.send(
                     PacketDistributor.PLAYER.with(
                             () ->  player
                     ),
-                    new SendPack(blockProps)
+                    new StoredChestsPack(blockProps)
             );
         }
 
@@ -186,8 +187,8 @@ public class QuickStoreCommand implements Command<CommandSource> {
                 player.sendMessage(new TranslationTextComponent("commands.quickstore.nostored"), player.getUniqueID());
             } else {
                 player.sendMessage(new TranslationTextComponent("commands.quickstore.stored", (QuickStore.storedItems.size())), player.getUniqueID());
-                if (StoreConfig.switches.detailInfoEnable.get()) {
-                    if (StoreConfig.switches.showDetailChestsEnable.get()) {
+                if (StoreConfig_Client.switches.detailInfoEnable.get()) {
+                    if (StoreConfig_Client.switches.showDetailChestsEnable.get()) {
                         for (Map.Entry<String, ItemInfo> entry : QuickStore.storedItems.entrySet())
                             player.sendMessage(new TranslationTextComponent("commands.quickstore.storeditems", entry.getKey(), entry.getValue().getAmount(), entry.getValue().posToString()), player.getUniqueID());
                     } else {
@@ -199,7 +200,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                 //TODO 添加声音
 //                        (Minecraft.getInstance()).player.playSound(Objects.requireNonNull(SoundEvent.REGISTRY.getObjectById(76)), 1.0F, 2.0F);
             }
-            if (Utils.isQuickSeeActive())
+            if (Utils_Server.isQuickSeeActive())
                 player.sendMessage(new TranslationTextComponent("commands.quickstore.see"), player.getUniqueID());
             QuickStore.storedItems.clear();
         } catch (Exception e) {
@@ -211,7 +212,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
         BlockPos pos = ci.getPos();
         if (!itemInfo.isSamePosition(pos))
             itemInfo.getPosition().add(pos);
-        Utils.storedList.add(new RenderBlockProps(ci.getPos(), StoreConfig.general.GREEN.get()));
+        Utils_Server.storedList.add(new RenderBlockProps(ci.getPos(), StoreConfig_Client.general.GREEN.get()));
         QuickStore.storedItems.put(displayName, itemInfo);
     }
 
@@ -219,7 +220,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
         List<BlockPos> blockPos = new ArrayList<>();
         BlockPos pos = ci.getPos();
         blockPos.add(pos);
-        Utils.storedList.add(new RenderBlockProps(ci.getPos(), StoreConfig.general.GREEN.get()));
+        Utils_Server.storedList.add(new RenderBlockProps(ci.getPos(), StoreConfig_Client.general.GREEN.get()));
         return blockPos;
     }
 

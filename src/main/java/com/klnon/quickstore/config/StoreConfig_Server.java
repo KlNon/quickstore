@@ -2,9 +2,7 @@ package com.klnon.quickstore.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
-
-public class StoreConfig {
-
+public class StoreConfig_Server {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
     public static final General general = new General();
@@ -14,12 +12,8 @@ public class StoreConfig {
         public final ForgeConfigSpec.IntValue slot;
         public final ForgeConfigSpec.IntValue itemSlot;
         public final ForgeConfigSpec.IntValue checkSlot;
-        public final ForgeConfigSpec.IntValue GREEN;
-        public final ForgeConfigSpec.IntValue RED;
         public final ForgeConfigSpec.ConfigValue<String> BanItems;
         public final ForgeConfigSpec.ConfigValue<String> itemSlotBan;
-        public final ForgeConfigSpec.BooleanValue showOverlay;
-        public final ForgeConfigSpec.DoubleValue outlineThickness;
 
         General(){
             BUILDER.push("general");
@@ -44,25 +38,9 @@ public class StoreConfig {
                     .comment("检查格子数大于checkSlot的箱子")
                     .defineInRange("checkSlot", 12, 0, 100);
 
-            GREEN = BUILDER
-                    .comment("颜色(默认绿色)")
-                    .defineInRange("green", 63232, 0, 100000000);
-
-            RED = BUILDER
-                    .comment("颜色(默认红色)")
-                    .defineInRange("red", 16711680, 0, 100000000);
-
             itemSlotBan = BUILDER
                     .comment("局部黑名单:以下物品在ItemSlot的格子内不会被贮藏,示例 minecraft:torch")
                     .define("itemSlotBan", "minecraft:torch");
-
-            showOverlay = BUILDER
-                    .comment("启用或关闭叠加层")
-                    .define("showOverlay", true);
-
-            outlineThickness = BUILDER
-                    .comment("这允许您设置自己的轮廓粗细,最大5")
-                    .defineInRange("outlineThickness", 10.0, 1.0, 20.0);
 
             BUILDER.pop();
         }
@@ -70,23 +48,11 @@ public class StoreConfig {
 
     public static class Switches{
         public final ForgeConfigSpec.BooleanValue singleEnable;
-        public final ForgeConfigSpec.BooleanValue detailInfoEnable;
-        public final ForgeConfigSpec.BooleanValue showDetailChestsEnable;
-        public final ForgeConfigSpec.BooleanValue fullInfoEnable;
         Switches(){
             BUILDER.push("switches");
             singleEnable = BUILDER
                     .comment("是否允许堆叠数量为1的物品被整理,true:是,false:否")
                     .define("singleEnable", false);
-            detailInfoEnable = BUILDER
-                    .comment("是否显示详细信息,true:是,false:否")
-                    .define("detailInfoEnable", true);
-            showDetailChestsEnable = BUILDER
-                    .comment("是否显示每个物品详细储存信息,true:是,false:否")
-                    .define("showDetailChestsEnable", true);
-            fullInfoEnable = BUILDER
-                    .comment("是否显示箱子是否满,true:是,false:否")
-                    .define("fullInfoEnable", true);
             BUILDER.pop();
         }
     }
