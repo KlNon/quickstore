@@ -129,7 +129,6 @@ public class Render
                 RenderSystem.enableTexture();
             }
         },
-        // TODO:
         ENTITIES {
             @Override
             public void apply()

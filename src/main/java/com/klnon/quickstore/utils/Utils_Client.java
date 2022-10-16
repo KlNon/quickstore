@@ -52,7 +52,6 @@ public class Utils_Client {
 
     @OnlyIn(value = Dist.CLIENT)
     public static double blockDistance(BlockPos positionA, BlockPos positionB) {
-        //TODO 距离不知道对不对
         return positionA.distanceSq(positionB.getX(), positionB.getY(), positionB.getZ(), false);
     }
 

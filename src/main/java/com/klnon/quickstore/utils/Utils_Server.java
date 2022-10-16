@@ -56,7 +56,6 @@ public class Utils_Server {
         Render.syncRenderList.clear();
         Utils_Server.storedList.clear();
         //刷新生成的箱子
-        //TODO 可能出null错
         assert (Minecraft.getInstance()).player != null;
         (Minecraft.getInstance()).player.sendChatMessage("/quickstore");
 
