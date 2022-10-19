@@ -1,5 +1,6 @@
 package com.klnon.quickstore.gui;
 
+import com.klnon.quickstore.QuickStore;
 import com.klnon.quickstore.config.StoreConfig_Client;
 import com.klnon.quickstore.utils.Utils_Client;
 import com.klnon.quickstore.utils.Utils_Server;
@@ -15,7 +16,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = Utils_Server.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = QuickStore.MOD_ID, value = Dist.CLIENT)
 public class GuiOverlay {
     private static final ResourceLocation circle = new ResourceLocation(Utils_Server.PREFIX_GUI + "circle.png");
 

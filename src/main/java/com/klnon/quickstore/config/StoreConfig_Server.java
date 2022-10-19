@@ -27,7 +27,7 @@ public class StoreConfig_Server {
 
             slot = BUILDER
                     .comment("玩家背包(36格)中有几格不参与贮藏,默认-1,全部参与贮藏")
-                    .defineInRange("slot", -1, -1, 35);
+                    .defineInRange("slot", 8, -1, 35);
 
             itemSlot = BUILDER
                     .comment("玩家背包(36格)中有几格仅保存食物和火把,默认8,即玩家整个物品栏")
@@ -58,4 +58,8 @@ public class StoreConfig_Server {
     }
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
+
+    static {
+
+    }
 }

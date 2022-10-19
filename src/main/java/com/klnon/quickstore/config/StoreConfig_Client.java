@@ -11,13 +11,19 @@ public class StoreConfig_Client {
     public static final Switches switches = new Switches();
 
     public static class General{
+        public final ForgeConfigSpec.IntValue BLUE;
         public final ForgeConfigSpec.IntValue GREEN;
         public final ForgeConfigSpec.IntValue RED;
+        public final ForgeConfigSpec.IntValue YELLOW;
         public final ForgeConfigSpec.BooleanValue showOverlay;
         public final ForgeConfigSpec.DoubleValue outlineThickness;
 
         General(){
             BUILDER.push("general");
+
+            BLUE = BUILDER
+                    .comment("颜色(默认淡蓝色)")
+                    .defineInRange("blue", 42495, 0, 100000000);
 
             GREEN = BUILDER
                     .comment("颜色(默认绿色)")
@@ -27,13 +33,17 @@ public class StoreConfig_Client {
                     .comment("颜色(默认红色)")
                     .defineInRange("red", 16711680, 0, 100000000);
 
+            YELLOW = BUILDER
+                    .comment("颜色(默认黄色)")
+                    .defineInRange("yellow", 16777099, 0, 100000000);
+
             showOverlay = BUILDER
                     .comment("启用或关闭叠加层")
                     .define("showOverlay", true);
 
             outlineThickness = BUILDER
                     .comment("这允许您设置自己的轮廓粗细,最大5")
-                    .defineInRange("outlineThickness", 10.0, 1.0, 20.0);
+                    .defineInRange("outlineThickness", 6.0, 1.0, 20.0);
 
             BUILDER.pop();
         }
@@ -57,5 +67,6 @@ public class StoreConfig_Client {
             BUILDER.pop();
         }
     }
+
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 }

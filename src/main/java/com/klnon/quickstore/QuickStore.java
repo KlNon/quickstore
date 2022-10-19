@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.klnon.quickstore.command.QuickStoreCommand;
+import com.klnon.quickstore.command.SearchCommand;
 import com.klnon.quickstore.config.StoreConfig_Client;
 import com.klnon.quickstore.config.StoreConfig_Server;
 import com.klnon.quickstore.model.ContainerInformation;
@@ -21,17 +22,27 @@ import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 @Mod("quickstore")
 @Mod.EventBusSubscriber
 public class QuickStore {
+    public static final String MOD_ID = "quickstore";
+    public static final String PREFIX_GUI = String.format("%s:textures/gui/", MOD_ID);
 
     public static List<ContainerInformation> nearbyContainers;
 
     public static Map<String, ItemInfo> storedItems=new HashMap<>();
+
+
+
+    public static Logger logger = LogManager.getLogger();
+
 
     @SubscribeEvent
     public void setup() {
@@ -39,11 +50,14 @@ public class QuickStore {
     }
 
     public QuickStore() {
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+        final ModLoadingContext ctx = ModLoadingContext.get();
+
+        ctx.registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
         //注册配置文件
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, StoreConfig_Client.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, StoreConfig_Server.SPEC);
+        if(FMLEnvironment.dist.isClient())
+            ctx.registerConfig(ModConfig.Type.CLIENT, StoreConfig_Client.SPEC);
+        ctx.registerConfig(ModConfig.Type.SERVER, StoreConfig_Server.SPEC);
 
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientProxy::setup);
 
@@ -56,6 +70,11 @@ public class QuickStore {
         dispatcher.register(
                 Commands.literal("quickstore")
                         .executes(QuickStoreCommand.instance)
+        );
+
+        dispatcher.register(
+                Commands.literal("quicksearch")
+                        .executes(SearchCommand.instance)
         );
 
         MinecraftForge.EVENT_BUS.register(new Events());

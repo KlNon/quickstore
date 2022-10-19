@@ -12,7 +12,7 @@ import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = Utils_Server.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = QuickStore.MOD_ID, value = Dist.CLIENT)
 public class Events {
 
     @SubscribeEvent

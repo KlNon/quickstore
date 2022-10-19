@@ -1,5 +1,6 @@
 package com.klnon.quickstore.networking;
 
+import com.klnon.quickstore.QuickStore;
 import com.klnon.quickstore.utils.Utils_Server;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -16,7 +17,7 @@ public class Networking {
 
     public static void registerMessage() {
         INSTANCE = NetworkRegistry.newSimpleChannel(
-                new ResourceLocation(Utils_Server.MOD_ID, "block_networking"),
+                new ResourceLocation(QuickStore.MOD_ID, "block_networking"),
                 () -> VERSION,
                 (version) -> version.equals(VERSION),
                 (version) -> version.equals(VERSION)
@@ -25,6 +26,13 @@ public class Networking {
                 .encoder(StoredChestsPack::encode)
                 .decoder(StoredChestsPack::decode)
                 .consumer(StoredChestsPack::handler)
+                .add();
+
+
+        INSTANCE.messageBuilder(SearchChestsPack.class, nextID())
+                .encoder(SearchChestsPack::encode)
+                .decoder(SearchChestsPack::decode)
+                .consumer(SearchChestsPack::handler)
                 .add();
     }
 }

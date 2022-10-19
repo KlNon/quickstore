@@ -39,6 +39,13 @@ public class RenderEnqueue implements Runnable
 			Render.syncRenderList.addAll(Utils_Server.storedList);
 			return;
 		}
+		//显示已储存的箱子
+		if(!Utils_Server.searchList.isEmpty())
+		{
+			Render.syncRenderList.clear();
+			Render.syncRenderList.addAll(Utils_Server.searchList);
+			return;
+		}
 
 		final World world = Minecraft.getInstance().world;
         final PlayerEntity player = Minecraft.getInstance().player;
@@ -83,6 +90,8 @@ public class RenderEnqueue implements Runnable
 				// Loop on the extends around the player's layer (6 down, 2 up)
 				for ( int curExtend = box.minChunkY; curExtend <= box.maxChunkY; curExtend++ )
 				{
+					if(curExtend<0)
+						continue;
 					ChunkSection ebs = extendsList[curExtend];
 					if (ebs == null) // happens quite often!
 						continue;
@@ -105,7 +114,7 @@ public class RenderEnqueue implements Runnable
 
 								data = Utils_Client.getBlockData();
 								// Reject blacklisted blocks
-								if( Utils_Server.blackList.contains(currentState.getBlock().asItem()) || !(currentState.getBlock().getRegistryName().toString().contains("chest")) )
+								if( Utils_Client.blackList.contains(currentState.getBlock().asItem()) || !(currentState.getBlock().getRegistryName().toString().contains("chest")) )
 									continue;
 
 								if(!data.isDrawing()) // fail safe

@@ -3,6 +3,7 @@ package com.klnon.quickstore.utils;
 
 import com.klnon.quickstore.config.StoreConfig_Client;
 import com.klnon.quickstore.config.StoreConfig_Server;
+import com.klnon.quickstore.gui.model.ItemStore;
 import com.klnon.quickstore.gui.render.Render;
 import com.klnon.quickstore.gui.render.RenderEnqueue;
 import com.klnon.quickstore.keybinding.KeyBindings;
@@ -10,12 +11,16 @@ import com.klnon.quickstore.model.BlockData;
 import com.klnon.quickstore.model.Region;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.ArrayList;
 
 public class Utils_Client {
 
@@ -31,7 +36,6 @@ public class Utils_Client {
     private static BlockData blockData;
     @OnlyIn(value = Dist.CLIENT)
     private static Vector3i lastPlayerPos = null;
-
 
     @OnlyIn(value = Dist.CLIENT)
     public static PlayerEntity getCPlayer() {
@@ -104,10 +108,11 @@ public class Utils_Client {
 
     @OnlyIn(value = Dist.CLIENT)
     public static void toggleQuickSee() {
-        Utils_Server.storedList.clear();
         Utils_Client.clientPlayer = Minecraft.getInstance().player;
         if (!quickSee) // enable drawing
         {
+            Utils_Server.storedList.clear();
+            Utils_Server.searchList.clear();
             Render.syncRenderList.clear(); // first, clear the buffer
             quickSee = true; // then, enable drawing
             requestBlockFinder(true); // finally, force a refresh
@@ -122,4 +127,28 @@ public class Utils_Client {
             quickSee = false;
         }
     }
+
+    //------------------------------------------------用于Gui-----------------------------------------------
+
+    private static ItemStore itemStore = new ItemStore();
+
+    public static ArrayList<Item> blackList = new ArrayList<Item>() {{
+        add(Items.AIR);
+        add(Items.BEDROCK);
+        add(Items.STONE);
+        add(Items.GRASS);
+        add(Items.DIRT);
+    }};
+
+    public static ItemStore getItemStore() {
+        return itemStore;
+    }
+
+    public static void setItemStore(ItemStore itemStore) {
+        Utils_Client.itemStore = itemStore;
+    }
+
+
+
+
 }
