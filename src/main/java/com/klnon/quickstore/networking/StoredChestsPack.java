@@ -26,7 +26,15 @@ public class StoredChestsPack {
 
     public static void handler(StoredChestsPack storedChestsPack, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Utils_Server.storedList.add(storedChestsPack.blockProps);
+            for (RenderBlockProps blockProps: Utils_Server.storedList) {
+                if(blockProps.getPos().equals(storedChestsPack.blockProps.getPos())){
+                    break;
+                }else {
+                    Utils_Server.storedList.add(storedChestsPack.blockProps);
+                }
+            }
+            if(Utils_Server.storedList.size()==0)
+                Utils_Server.storedList.add(storedChestsPack.blockProps);
         });
         ctx.get().setPacketHandled(true);
     }

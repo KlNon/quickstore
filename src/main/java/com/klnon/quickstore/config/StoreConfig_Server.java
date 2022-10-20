@@ -9,6 +9,7 @@ public class StoreConfig_Server {
     public static final Switches switches = new Switches();
     public static class General{
         public final ForgeConfigSpec.IntValue distance;
+        public final ForgeConfigSpec.IntValue searchDistance;
         public final ForgeConfigSpec.IntValue slot;
         public final ForgeConfigSpec.IntValue itemSlot;
         public final ForgeConfigSpec.IntValue checkSlot;
@@ -19,7 +20,12 @@ public class StoreConfig_Server {
             BUILDER.push("general");
             distance = BUILDER
                     .comment("距离")
-                    .defineInRange("distance", 2,0,9);
+                    .defineInRange("distance", 1,0,9);
+
+
+            searchDistance = BUILDER
+                    .comment("搜索距离")
+                    .defineInRange("searchDistance", 2,0,9);
 
             BanItems = BUILDER
                     .comment("全局黑名单:以下物品不会被贮藏,示例 minecraft:stick")

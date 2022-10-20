@@ -1,19 +1,18 @@
 {
-  "commands.quickstore.containers":"§3= §r%d §e个箱子在范围内.",
-  "commands.quickstore.stored":"§3= §r%d §e物品已储存!",
-  "commands.quickstore.nostored":"§3= §r§e没有物品被储存!",
-  "commands.quickstore.nospace":"§3= §r§e箱子没有空间: [X:%s , Y:%s , Z:%s].",
-  "commands.quickstore.storeditems":"§3= §r%s §e储存了 [%d] 于 %s.",
-  "commands.quickstore.storeditems2":"§3= §r%s §e储存了 [%d]",
-  "commands.quickstore.see": "§3= 红色:满了的箱子,绿色:储存到的目标",
-  "commands.quickstore.des":" 将会把你的物品整理到附近的箱子",
-  "commands.quickstore.wait":"请稍作等待.",
+  "commands.quickstore.containers": "§3= §r%d §e个箱子在范围内.",
+  "commands.quickstore.stored": "§3= §r%d §e物品已储存!",
+  "commands.quickstore.nostored": "§3= §r§e没有物品被储存!",
+  "commands.quickstore.nospace": "§3= §r§e箱子没有空间: [X:%s , Y:%s , Z:%s].",
+  "commands.quickstore.storeditems": "§3= §r%s §e储存了 [%d] 于 %s.",
+  "commands.quickstore.storeditems2": "§3= §r%s §e储存了 [%d]",
+  "commands.quickstore.des": " 将会把你的物品整理到附近的箱子",
+  "commands.quickstore.wait": "请稍作等待.",
 
-  "keys.quickstore.store":"将物品快速放入周围箱子.",
-  "keys.quickstore.title":"快速贮藏",
-  "keys.quickstore.quicksee":"快速查看",
-  "keys.quickstore.quicksearch":"打开Gui",
-  "keys.quickstore.search":"进行搜索",
+  "keys.quickstore.store": "将物品快速放入周围箱子.",
+  "keys.quickstore.title": "快速贮藏",
+  "keys.quickstore.quicksee": "快速查看",
+  "keys.quickstore.quicksearch": "打开Gui",
+  "keys.quickstore.search": "进行搜索",
 
   "quickstore.debug.init": "快速贮藏初始化",
   "quickstore.quicksee.overlay": "QuickSee 启动中",
@@ -28,10 +27,12 @@
   "quickstore.gui.help": "帮助",
   "quickstore.input.add": "添加物品",
   "quickstore.input.add_hand": "添加手中物品",
+  "quickstore.input.search": "搜索",
   "quickstore.tooltips.add_item": "添加minecraft中物品到列表中",
   "quickstore.tooltips.add_item_in_hand": "添加手中物品到列表中",
   "quickstore.tooltips.edit1": "点击以开/关",
   "quickstore.tooltips.edit2": "按住Shift点击以编辑",
+  "quickstore.tooltips.search": "将会打开快速视野,使用Ctrl+V(默认)关闭视野",
   "quickstore.single.add": "添加",
   "quickstore.single.help": "帮助",
   "quickstore.single.cancel": "取消",
@@ -44,5 +45,5 @@
   "quickstore.help.gui5": "绿色框: 物品所储存到的箱子",
   "quickstore.help.gui6": "黄色框: 搜索的物品所在的箱子",
 
-  "quickstore.message.invalid_hand": "手中物品无效"
+  "quickstore.message.invalid_hand": "invalid hand"
 }

@@ -3,11 +3,13 @@ package com.klnon.quickstore.command;
 
 import com.klnon.quickstore.QuickStore;
 import com.klnon.quickstore.config.StoreConfig_Client;
+import com.klnon.quickstore.config.StoreConfig_Server;
 import com.klnon.quickstore.gui.model.ItemStore;
 import com.klnon.quickstore.gui.render.RenderBlockProps;
 import com.klnon.quickstore.model.ContainerInformation;
 import com.klnon.quickstore.model.ItemInfo;
 import com.klnon.quickstore.networking.Networking;
+import com.klnon.quickstore.networking.SearchChestsPack;
 import com.klnon.quickstore.networking.StoredChestsPack;
 import com.klnon.quickstore.utils.Utils_Server;
 import com.mojang.brigadier.Command;
@@ -29,8 +31,8 @@ public class SearchCommand implements Command<CommandSource> {
 
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().asPlayer();
-        List<ItemStack> items= ItemStore.getItemStack();
-        List<ContainerInformation> containers = Utils_Server.getNearbyContainers(player);
+        List<ItemStack> items= Utils_Server.getItems();
+        List<ContainerInformation> containers = Utils_Server.getNearbyContainers(player,Utils_Server.distanceList[StoreConfig_Server.general.searchDistance.get()]);
 
         //遍历玩家背包
         for (ItemStack itemStacks : items) {
@@ -48,8 +50,9 @@ public class SearchCommand implements Command<CommandSource> {
                     for (int containerSlot = 0; containerSlot < containerSize; containerSlot++) {
                         ItemStack containerStack = containerInventory.getStackInSlot(containerSlot);
                         if (ItemStack.areItemsEqual(itemStacks, containerStack)) {
-                            Utils_Server.searchList.add(new RenderBlockProps(ci.getPos(), StoreConfig_Client.general.YELLOW.get()));
-                        }
+                            if(!Utils_Server.searchList.contains(new RenderBlockProps(ci.getPos(),StoreConfig_Client.general.YELLOW.get())))
+                                Utils_Server.searchList.add(new RenderBlockProps(ci.getPos(), StoreConfig_Client.general.YELLOW.get()));
+                            }
                     }
                 }
         }
@@ -60,9 +63,12 @@ public class SearchCommand implements Command<CommandSource> {
                         PacketDistributor.PLAYER.with(
                                 () ->  player
                         ),
-                        new StoredChestsPack(blockProps)
+                        new SearchChestsPack(blockProps)
                 );
             }
+        Utils_Server.searchList.clear();
+        Utils_Server.getItems().clear();
+
         return Command.SINGLE_SUCCESS;
     }
 }

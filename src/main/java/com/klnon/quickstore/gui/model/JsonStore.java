@@ -86,18 +86,18 @@ public class JsonStore
     //加载默认内容
     public List<ItemData.SerializableItemData> populateDefault() {
         List<ItemData.SerializableItemData> itemData = new ArrayList<>();
-        //TODO 此处是加载默认的东西
-//        Tags.Blocks.ORES.getAllElements().forEach(e -> {
-//            if( e.getRegistryName() == null )
-//                return;
-//
-//            itemData.add(new ItemData.SerializableItemData(new TranslationTextComponent(e.getTranslationKey()).getString(),
-//                    e.getRegistryName().toString(),
-//                    false,
-//                    0)
-//            );
-//        });
+        // 此处是加载默认的东西
 
+        Tags.Items.CHESTS_WOODEN.getAllElements().forEach(e -> {
+            if( e.getRegistryName() == null )
+                return;
+
+            itemData.add(new ItemData.SerializableItemData(new TranslationTextComponent(e.getTranslationKey()).getString(),
+                    e.getRegistryName().toString(),
+                    false,
+                    0)
+            );
+        });
 //        for (int i = 0; i < itemData.size(); i++)
 //            itemData.get(i).setOrder(i);
 

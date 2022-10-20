@@ -21,6 +21,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils_Client {
 
@@ -108,11 +110,12 @@ public class Utils_Client {
 
     @OnlyIn(value = Dist.CLIENT)
     public static void toggleQuickSee() {
+        Utils_Server.storedList.clear();
+        Utils_Server.searchList.clear();
+        Utils_Server.getItems().clear();
         Utils_Client.clientPlayer = Minecraft.getInstance().player;
         if (!quickSee) // enable drawing
         {
-            Utils_Server.storedList.clear();
-            Utils_Server.searchList.clear();
             Render.syncRenderList.clear(); // first, clear the buffer
             quickSee = true; // then, enable drawing
             requestBlockFinder(true); // finally, force a refresh
@@ -148,6 +151,15 @@ public class Utils_Client {
         Utils_Client.itemStore = itemStore;
     }
 
+    public static boolean isContainChinese(String str) {
+
+        Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
+        Matcher m = p.matcher(str);
+        if (m.find()) {
+            return true;
+        }
+        return false;
+    }
 
 
 

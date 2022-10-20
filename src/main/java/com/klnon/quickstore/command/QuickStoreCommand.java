@@ -33,7 +33,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
         Utils_Server.storedList.clear();
 
         ServerPlayerEntity player = context.getSource().asPlayer();
-        List<ContainerInformation> containers = Utils_Server.getNearbyContainers(player);
+        List<ContainerInformation> containers = Utils_Server.getNearbyContainers(player,Utils_Server.distanceList[StoreConfig_Server.general.distance.get()]);
         Utils_Server.setSPlayer(player);
         QuickStore.nearbyContainers = containers;
         PlayerInventory inventoryPlayer = player.inventory;
@@ -201,8 +201,6 @@ public class QuickStoreCommand implements Command<CommandSource> {
                 //TODO 添加声音
 //                        (Minecraft.getInstance()).player.playSound(Objects.requireNonNull(SoundEvent.REGISTRY.getObjectById(76)), 1.0F, 2.0F);
             }
-            if (Utils_Client.isQuickSeeActive())
-                player.sendMessage(new TranslationTextComponent("commands.quickstore.see"), player.getUniqueID());
             QuickStore.storedItems.clear();
         } catch (Exception e) {
             e.printStackTrace();
@@ -213,7 +211,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
         BlockPos pos = ci.getPos();
         if (!itemInfo.isSamePosition(pos))
             itemInfo.getPosition().add(pos);
-        Utils_Server.storedList.add(new RenderBlockProps(ci.getPos(), StoreConfig_Client.general.GREEN.get()));
+        checkRepeat(pos);
         QuickStore.storedItems.put(displayName, itemInfo);
     }
 
@@ -221,8 +219,13 @@ public class QuickStoreCommand implements Command<CommandSource> {
         List<BlockPos> blockPos = new ArrayList<>();
         BlockPos pos = ci.getPos();
         blockPos.add(pos);
-        Utils_Server.storedList.add(new RenderBlockProps(ci.getPos(), StoreConfig_Client.general.GREEN.get()));
+        checkRepeat(pos);
         return blockPos;
+    }
+
+    private void checkRepeat(BlockPos pos) {
+        if(!Utils_Server.storedList.contains(new RenderBlockProps(pos,StoreConfig_Client.general.GREEN.get())))
+            Utils_Server.storedList.add(new RenderBlockProps(pos, StoreConfig_Client.general.GREEN.get()));
     }
 
 

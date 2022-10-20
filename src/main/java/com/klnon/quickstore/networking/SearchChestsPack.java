@@ -25,7 +25,15 @@ public class SearchChestsPack {
 
     public static void handler(SearchChestsPack searchChestsPack, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Utils_Server.searchList.add(searchChestsPack.blockProps);
+            for (RenderBlockProps blockProps: Utils_Server.searchList) {
+                if(blockProps.getPos().equals(searchChestsPack.blockProps.getPos())){
+                    break;
+                }else {
+                    Utils_Server.searchList.add(searchChestsPack.blockProps);
+                }
+            }
+            if(Utils_Server.searchList.size()==0)
+                Utils_Server.searchList.add(searchChestsPack.blockProps);
         });
         ctx.get().setPacketHandled(true);
     }

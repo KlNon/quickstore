@@ -86,6 +86,7 @@ public abstract class GuiBase extends Screen {
 
         int width = this.width;
         int height = this.height;
+
         getMinecraft().getTextureManager().bindTexture(getBackground());
         if( this.hasSide ) {
             drawTexturedQuadFit((double) width / 2 + SIDE_X_OFFSET, (float) height / 2 + SIDE_Y_OFFSET, SIDE_WIDTH, SIDE_HEIGHT, 0xffffff);

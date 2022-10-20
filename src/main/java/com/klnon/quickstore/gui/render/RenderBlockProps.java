@@ -31,6 +31,9 @@ public class RenderBlockProps {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
+		if(this.pos.getX() == ((RenderBlockProps) o).getPos().getX() && this.pos.getY() == ((RenderBlockProps) o).getPos().getY() && this.pos.getZ() == ((RenderBlockProps) o).getPos().getZ()){
+			return true;
+		}
 		RenderBlockProps that = (RenderBlockProps) o;
 		return Objects.equal(pos, that.pos);
 	}

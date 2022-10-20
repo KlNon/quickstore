@@ -5,6 +5,7 @@ import com.klnon.quickstore.gui.GuiSelection;
 import com.klnon.quickstore.gui.model.GameItemStore;
 import com.klnon.quickstore.gui.utils.GuiBase;
 import com.klnon.quickstore.gui.utils.ScrollingList;
+import com.klnon.quickstore.utils.Utils_Client;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -67,8 +68,8 @@ public class GuiItemList extends GuiBase {
                 search.getText().length() == 0
                         ? this.items
                         : this.items.stream()
-                            .filter(e -> e.getItemStack().getDisplayName().getString().toLowerCase().contains(search.getText().toLowerCase()))
-                            .collect(Collectors.toList())
+                        .filter(e -> e.getItemStack().getDisplayName().getString().toLowerCase().contains(search.getText().toLowerCase()))
+                        .collect(Collectors.toList())
         );
 
         lastSearched = search.getText();
@@ -83,7 +84,7 @@ public class GuiItemList extends GuiBase {
 
     @Override
     public boolean mouseClicked(double x, double y, int button) {
-        if( this.search.mouseClicked (x, y, button) )
+        if (this.search.mouseClicked(x, y, button))
             this.setListener(this.search);
 
         return super.mouseClicked(x, y, button);
@@ -134,11 +135,47 @@ public class GuiItemList extends GuiBase {
                 FontRenderer font = this.parent.minecraft.fontRenderer;
 
                 ResourceLocation resource = this.item.getItemStack().getItem().getRegistryName();
-                font.drawString(stack,this.item.getItemStack().getItem().getName().getString(), left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET, Color.WHITE.getRGB());
-                // @mcp: func_240652_a_ = unknown... Code recommendation
+                String itemName = this.item.getItemStack().getItem().getName().getString();
+                if (Utils_Client.isContainChinese(itemName))
+                    if (itemName.length() > 4) {
+                        font.drawString(stack, itemName.substring(0, 3), left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET, Color.WHITE.getRGB());
+                        font.drawString(stack, itemName.substring(3), left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET2, Color.WHITE.getRGB());
+                    } else
+                        font.drawString(stack, itemName, left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET2, Color.WHITE.getRGB());
+                else {
+                    //如果英文字符串有空格
+                    if (itemName.contains(" ")) {
+                        String[] itemSplit = itemName.split("\\s+");
+                        StringBuilder itemSplitName = new StringBuilder();
+                        int strPos = 0;
+                        if (itemSplit[0].length() + itemSplit[1].length() > 9) {
+                            font.drawString(stack, itemSplit[0], left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET, Color.WHITE.getRGB());
+                            strPos = 1;
+                            if (itemSplit.length > 2) {
+                                font.drawString(stack, itemSplit[1], left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET2, Color.WHITE.getRGB());
+                                strPos = 2;
+                            }
+                            for (int i = strPos; i < itemSplit.length; i++)
+                                itemSplitName.append(itemSplit[i]).append(" ");
+                            font.drawString(stack, itemSplitName.toString(), left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET3, Color.WHITE.getRGB());
+                        }
+                        if (itemSplit[0].length() + itemSplit[1].length() <= 9) {
+                            font.drawString(stack, itemSplit[0] + " " + itemSplit[1], left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET, Color.WHITE.getRGB());
+                            strPos = 2;
+                            if (itemSplit.length > 3) {
+                                font.drawString(stack, itemSplit[2], left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET2, Color.WHITE.getRGB());
+                                strPos = 3;
+                            }
+                            for (int i = strPos; i < itemSplit.length; i++)
+                                itemSplitName.append(itemSplit[i]).append(" ");
+                            font.drawString(stack, itemSplitName.toString(), left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET3, Color.WHITE.getRGB());
+                        }
 
+                    } else
+                        font.drawString(stack, itemName, left + ITEM_NAME_X_OFFSET, top + ITEM_NAME_Y_OFFSET3, Color.WHITE.getRGB());
+                }
                 RenderHelper.enableStandardItemLighting();
-                this.parent.minecraft.getItemRenderer().renderItemAndEffectIntoGUI(this.item.getItemStack(), left + 8, top + 7);
+                this.parent.minecraft.getItemRenderer().renderItemAndEffectIntoGUI(this.item.getItemStack(), left + ITEM_PIC_X_OFFSET, top + ITEM_PIC_Y_OFFSET);
                 RenderHelper.disableStandardItemLighting();
             }
 
