@@ -6,9 +6,7 @@ import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.util.math.BlockPos;
 
 public class ContainerInformation {
-    public ChestTileEntity chest1;
-
-    public ChestTileEntity chest2;
+    public ChestTileEntity chest;
 
     public IInventory inventoryObject;
 
@@ -17,14 +15,8 @@ public class ContainerInformation {
     public boolean isFull=false;
 
     public ChestTileEntity[] getChests() {
-        if (this.chest2 != null) {
-            ChestTileEntity[] arrayOfChestTileEntity = new ChestTileEntity[2];
-            arrayOfChestTileEntity[0] = this.chest1;
-            arrayOfChestTileEntity[1] = this.chest2;
-            return arrayOfChestTileEntity;
-        }
         ChestTileEntity[] chests = new ChestTileEntity[1];
-        chests[0] = this.chest1;
+        chests[0] = this.chest;
         return chests;
     }
 
@@ -34,15 +26,9 @@ public class ContainerInformation {
             arrayOfIInventory[0] = this.inventoryObject;
             return arrayOfIInventory;
         }
-        if (this.chest2 != null) {
-            IInventory[] arrayOfIInventory = new IInventory[2];
-            arrayOfIInventory[0] = this.chest1;
-            arrayOfIInventory[1] = this.chest2;
-            return arrayOfIInventory;
-        }
-        if (this.chest1 != null){
+        if (this.chest != null){
             IInventory[] chests = new IInventory[1];
-            chests[0] = this.chest1;
+            chests[0] = this.chest;
             return chests;
         }
         return null;
@@ -52,6 +38,6 @@ public class ContainerInformation {
         if (this.blockPositionOfInventory != null) {
             return this.blockPositionOfInventory.getPos();
         }
-        return this.chest1.getPos();
+        return this.chest.getPos();
     }
 }

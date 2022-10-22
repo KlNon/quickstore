@@ -23,6 +23,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class QuickStoreCommand implements Command<CommandSource> {
 
@@ -33,7 +35,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
         Utils_Server.storedList.clear();
 
         ServerPlayerEntity player = context.getSource().asPlayer();
-        List<ContainerInformation> containers = Utils_Server.getNearbyContainers(player,Utils_Server.distanceList[StoreConfig_Server.general.distance.get()]);
+        List<ContainerInformation> containers = Utils_Server.getNearbyContainers(player, Utils_Server.distanceList[StoreConfig_Server.general.distance.get()]);
         Utils_Server.setSPlayer(player);
         QuickStore.nearbyContainers = containers;
         PlayerInventory inventoryPlayer = player.inventory;
@@ -45,7 +47,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
         //遍历玩家背包
         for (int inventorySlot = 0; inventorySlot < playerInventorySize; inventorySlot++) {
             //标记当前物品是否储存到下列箱子
-            boolean isStore = false;
+            boolean isStored = false;
 
             ItemStack playersItemStack = inventoryPlayer.getStackInSlot(inventorySlot);
 
@@ -64,9 +66,8 @@ public class QuickStoreCommand implements Command<CommandSource> {
 
                 //遍历附近的箱子
                 for (ContainerInformation ci : containers) {
-                    boolean containsItem = false;
                     boolean includeItem = false;
-                    boolean itemCompletlyAdded = false;
+                    boolean itemCompletlyAdded = false;                    //判断是否有空位或者物品已经添加
                     IInventory freeSlotInventory = null;
                     int freeSlotIndex = -1;
 
@@ -77,101 +78,112 @@ public class QuickStoreCommand implements Command<CommandSource> {
                     if (inventories == null)
                         continue;
 
+                    //获取是否为大箱子还是小箱子
+                    ci.chest.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(handler -> {
+                        inventories[0] = ((InvWrapper)handler).getInv();
+                    });
+
+                    //遍历箱子
                     IInventory containerInventory = inventories[0];
                     int containerSize = containerInventory.getSizeInventory();
-                    //遍历箱子的物品
                     for (int containerSlot = 0; containerSlot < containerSize; containerSlot++) {
-                        //判断是否有空位
+                        //判断是否已经有空位或者物品已经添加
                         if (freeSlotInventory != null && itemCompletlyAdded)
                             break;
+                        //获取当前格子箱子物品
                         ItemStack containerStack = containerInventory.getStackInSlot(containerSlot);
-                        if (containerStack.isEmpty()) {
-                            if (freeSlotInventory == null) {
-                                freeSlotInventory = containerInventory;
-                                freeSlotIndex = containerSlot;
-                            }
-                            //如果箱子里的物品(内循环)和身上物品(外循环)相同,且箱子格子不为2格
-                        } else if (ItemStack.areItemsEqual(playersItemStack, containerStack)) {
-                            //箱子大小大于12格
-                            if (containerSize > 12)
-                                containsItem = true;
-                            //添加物品
-                            int oldCountInContainer = containerStack.getCount();
-                            int newCountInContainer = containerStack.getCount() + playersItemStack.getCount();
-                            if (newCountInContainer > containerStack.getMaxStackSize())
-                                newCountInContainer = containerStack.getMaxStackSize();
-                            int removedCountFromPlayer = newCountInContainer - oldCountInContainer;
-                            if (removedCountFromPlayer > 0)
-                                isStore = true;
-                            if(removedCountFromPlayer==0)
+                        //若箱子物品为空
+                        if (containerStack.isEmpty()&&freeSlotInventory == null) {
+                            freeSlotInventory = containerInventory;
+                            freeSlotIndex = containerSlot;
+                            //如果箱子里的物品(内循环)和身上物品(外循环)相同
+                        } else if (compareItems(playersItemStack,containerStack) ){
+                            //如果未储存但该箱子包含该物品
+                            if(containerStack.getCount()==containerStack.getMaxStackSize()){
                                 includeItem = true;
-                            containerStack.setCount(newCountInContainer);
-                            int old_playerCount = playersItemStack.getCount();
+                                continue;
+                            }
+                            //添加物品
+                            int oldCountInContainer = containerStack.getCount();//32
+                            int newCountInContainer = containerStack.getCount() + playersItemStack.getCount();//32+64=96
+                            newCountInContainer= Math.min(newCountInContainer, containerStack.getMaxStackSize());//96>64?64:96=64
+                            int removedCountFromPlayer = newCountInContainer - oldCountInContainer;//64-32=32
+                            containerStack.setCount(newCountInContainer);//=64
 
-                            String displayName = playersItemStack.getTextComponent().getString();
+                            //玩家移除物品
+                            int old_playerCount = playersItemStack.getCount();//64
+                            playersItemStack.setCount(playersItemStack.getCount() - removedCountFromPlayer);//64-32=32
 
-                            playersItemStack.setCount(playersItemStack.getCount() - removedCountFromPlayer);
+                            //如果储存进去了
+                            if (removedCountFromPlayer > 0)
+                                isStored = true;
 
+                            //如果玩家物品数量为0
                             int playerCount = playersItemStack.getCount();
-                            //箱子是否满了
-                            ci.isFull= playerCount != 0;
+                            //玩家手上如果还剩下物品说明箱子满了
+                            ci.isFull = playerCount != 0;
+
                             //统计贮藏物品,不统计空气
                             if (StoreConfig_Client.switches.detailInfoEnable.get()) {
-                                if (QuickStore.storedItems.containsKey(displayName)) {
+                                if(playersItemStack.isEmpty())
+                                    continue;
+                                String displayName = playersItemStack.getTextComponent().getString();
+                                //如果已经储存的物品名称(Keys)中包括了当前物品名称,并且此次循环成功将玩家物品转移了一些到箱子 .storedItems中包括了储存该物品的箱子的位置与储存总数
+                                if (QuickStore.storedItems.containsKey(displayName) && removedCountFromPlayer > 0) {
                                     ItemInfo itemInfo = QuickStore.storedItems.get(displayName);
-                                    itemInfo.setAmount(itemInfo.getAmount() + old_playerCount - playerCount);
-                                    if (removedCountFromPlayer > 0) {
-                                        addPos(ci, displayName, itemInfo);
-                                    }
-                                } else {
-                                    if (removedCountFromPlayer > 0) {
-                                        QuickStore.storedItems.put(displayName, new ItemInfo(addNewPos(ci), old_playerCount - playerCount));
-                                    }
+                                    itemInfo.setAmount(itemInfo.getAmount() + removedCountFromPlayer);
+                                    addPos(ci, displayName, itemInfo);
+                                } else if (removedCountFromPlayer > 0) {//新建
+                                    QuickStore.storedItems.put(displayName, new ItemInfo(addNewPos(ci), old_playerCount - playerCount));
                                 }
                             }
+                            //如果玩家物品数量为0
                             if (playersItemStack.getCount() <= 0) {
                                 inventoryPlayer.removeStackFromSlot(inventorySlot);
                                 itemCompletlyAdded = true;
                             }
                         }
                     }
-                    //如果箱子没有空间则提示
+
+
+                    //如果箱子 包含该物品 没有空间 允许显示满了的箱子 箱子确实满了
                     if (includeItem && freeSlotInventory == null && StoreConfig_Client.switches.fullInfoEnable.get() && ci.isFull) {
                         BlockPos pos = ci.getPos();
-//                        player.sendMessage(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), player.getUniqueID());
+                        //player.sendMessage(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), player.getUniqueID());
                         Utils_Server.storedList.add(new RenderBlockProps(pos, StoreConfig_Client.general.RED.get()));
                     }
-                    //
-                    if (containsItem && !itemCompletlyAdded && freeSlotInventory != null) {
+
+
+                    if (!itemCompletlyAdded && freeSlotInventory != null) {
                         if (StoreConfig_Client.switches.detailInfoEnable.get() && !playersItemStack.isEmpty()) {
                             String displayName = playersItemStack.getTextComponent().getString();
                             if (QuickStore.storedItems.containsKey(displayName)) {
                                 ItemInfo itemInfo = QuickStore.storedItems.get(displayName);
                                 itemInfo.setAmount(itemInfo.getAmount() + inventoryPlayer.getStackInSlot(inventorySlot).getCount());
-                                if (!isStore)
+                                if (!isStored)
                                     addPos(ci, displayName, itemInfo);
                             } else {
-                                if (!isStore)
+                                if (!isStored)
                                     QuickStore.storedItems.put(displayName, new ItemInfo(addNewPos(ci), inventoryPlayer.getStackInSlot(inventorySlot).getCount()));
                             }
                         }
                         freeSlotInventory.setInventorySlotContents(freeSlotIndex, inventoryPlayer.getStackInSlot(inventorySlot));
                         inventoryPlayer.setInventorySlotContents(inventorySlot, ItemStack.EMPTY);
-                        isStore = true;
+                        isStored = true;
                     }
                 }
             }
         }
         //发包给客户端,渲染相关箱子
-        if(!player.world.isRemote)
+        if (!player.world.isRemote)
             for (RenderBlockProps blockProps : Utils_Server.storedList) {
-            Networking.INSTANCE.send(
-                    PacketDistributor.PLAYER.with(
-                            () ->  player
-                    ),
-                    new StoredChestsPack(blockProps)
-            );
-        }
+                Networking.INSTANCE.send(
+                        PacketDistributor.PLAYER.with(
+                                () -> player
+                        ),
+                        new StoredChestsPack(blockProps)
+                );
+            }
 
         commandFeedback(player);
 
@@ -212,7 +224,6 @@ public class QuickStoreCommand implements Command<CommandSource> {
         if (!itemInfo.isSamePosition(pos))
             itemInfo.getPosition().add(pos);
         checkRepeat(pos);
-        QuickStore.storedItems.put(displayName, itemInfo);
     }
 
     private List<BlockPos> addNewPos(ContainerInformation ci) {
@@ -224,9 +235,15 @@ public class QuickStoreCommand implements Command<CommandSource> {
     }
 
     private void checkRepeat(BlockPos pos) {
-        if(!Utils_Server.storedList.contains(new RenderBlockProps(pos,StoreConfig_Client.general.GREEN.get())))
+        if (!Utils_Server.storedList.contains(new RenderBlockProps(pos, StoreConfig_Client.general.GREEN.get())))
             Utils_Server.storedList.add(new RenderBlockProps(pos, StoreConfig_Client.general.GREEN.get()));
     }
 
+    //比较物品
+    private boolean compareItems(ItemStack first, ItemStack second) {
+        if(StoreConfig_Server.general.IGNORE_ITEM_DAMAGE.get())
+            return first.isItemEqualIgnoreDurability(second);
+        return first.isItemEqual(second);
+    }
 
 }

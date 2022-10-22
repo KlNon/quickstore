@@ -15,6 +15,7 @@ public class StoreConfig_Server {
         public final ForgeConfigSpec.IntValue checkSlot;
         public final ForgeConfigSpec.ConfigValue<String> BanItems;
         public final ForgeConfigSpec.ConfigValue<String> itemSlotBan;
+        public final ForgeConfigSpec.BooleanValue IGNORE_ITEM_DAMAGE;
 
         General(){
             BUILDER.push("general");
@@ -47,6 +48,10 @@ public class StoreConfig_Server {
             itemSlotBan = BUILDER
                     .comment("局部黑名单:以下物品在ItemSlot的格子内不会被贮藏,示例 minecraft:torch")
                     .define("itemSlotBan", "minecraft:torch");
+
+            IGNORE_ITEM_DAMAGE = BUILDER
+                    .comment("是否忽略物品的耐久度")
+                    .define("IGNORE_ITEM_DAMAGE", false);
 
             BUILDER.pop();
         }

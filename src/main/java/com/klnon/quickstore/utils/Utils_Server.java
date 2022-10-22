@@ -5,21 +5,16 @@ import com.klnon.quickstore.config.StoreConfig_Server;
 import com.klnon.quickstore.gui.model.ItemStore;
 import com.klnon.quickstore.gui.render.Render;
 import com.klnon.quickstore.gui.render.RenderBlockProps;
-import com.klnon.quickstore.model.BlockData;
 import com.klnon.quickstore.model.ContainerInformation;
 import com.klnon.quickstore.networking.Networking;
 import com.klnon.quickstore.networking.StoreToServerPack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.ArrayList;
@@ -38,9 +33,9 @@ public class Utils_Server {
 
 
     //储存完成储存后箱子的位置
-    public static List<RenderBlockProps> storedList = Collections.synchronizedList( new ArrayList<>() ); // this is accessed by threads
+    public static List<RenderBlockProps> storedList = Collections.synchronizedList(new ArrayList<>()); // this is accessed by threads
 
-    public static List<RenderBlockProps> searchList = Collections.synchronizedList( new ArrayList<>() );
+    public static List<RenderBlockProps> searchList = Collections.synchronizedList(new ArrayList<>());
 
     public static ServerPlayerEntity getSPlayer() {
         return serverPlayer;
@@ -69,8 +64,8 @@ public class Utils_Server {
         Utils_Server.searchList.clear();
         Utils_Server.getItems().clear();
         //将本地储存的要搜索的物品发送给服务器
-        if(FMLEnvironment.dist.isClient())
-            for(ItemStack item : ItemStore.getItemStack()){
+        if (FMLEnvironment.dist.isClient())
+            for (ItemStack item : ItemStore.getItemStack()) {
                 Networking.INSTANCE.sendToServer(new StoreToServerPack(item));
             }
         //刷新生成的箱子
@@ -84,24 +79,25 @@ public class Utils_Server {
         return quickSee && Minecraft.getInstance().world != null && Minecraft.getInstance().player != null;
     }
 
-    public static List<ContainerInformation> getNearbyContainers(ServerPlayerEntity player,double range) {
+    public static List<ContainerInformation> getNearbyContainers(ServerPlayerEntity player, double range) {
         BlockPos playerPosition = player.getPosition();
         List<ChestTileEntity> chests = new ArrayList<>();
 
         List<ContainerInformation> containers = new ArrayList<>();
+
         for (TileEntity tileEntity : (player.getEntityWorld()).loadedTileEntityList) {
             if (tileEntity instanceof ChestTileEntity)
                 if (Math.abs(playerPosition.getX() - tileEntity.getPos().getX()) <= range
-                && Math.abs(playerPosition.getY() - tileEntity.getPos().getY()) <= range
-                && Math.abs(playerPosition.getZ() - tileEntity.getPos().getZ()) <= range) {
+                        && Math.abs(playerPosition.getY() - tileEntity.getPos().getY()) <= range
+                        && Math.abs(playerPosition.getZ() - tileEntity.getPos().getZ()) <= range) {
                     chests.add((ChestTileEntity) tileEntity);
                 }
             if (tileEntity instanceof IInventory
-            && !(tileEntity instanceof ChestTileEntity)
-            && ((IInventory) tileEntity).getSizeInventory() > StoreConfig_Server.general.checkSlot.get()) {
+                    && !(tileEntity instanceof ChestTileEntity)
+                    && ((IInventory) tileEntity).getSizeInventory() > StoreConfig_Server.general.checkSlot.get()) {
                 if (Math.abs(playerPosition.getX() - tileEntity.getPos().getX()) <= range
-                && Math.abs(playerPosition.getY() - tileEntity.getPos().getY()) <= range
-                && Math.abs(playerPosition.getZ() - tileEntity.getPos().getZ()) <= range) {
+                        && Math.abs(playerPosition.getY() - tileEntity.getPos().getY()) <= range
+                        && Math.abs(playerPosition.getZ() - tileEntity.getPos().getZ()) <= range) {
                     ContainerInformation ci = new ContainerInformation();
                     ci.inventoryObject = (IInventory) tileEntity;
                     ci.blockPositionOfInventory = tileEntity;
@@ -111,7 +107,7 @@ public class Utils_Server {
         }
         for (ChestTileEntity chest : chests) {
             ContainerInformation ci = new ContainerInformation();
-            ci.chest1 = chest;
+            ci.chest = chest;
             containers.add(ci);
         }
         return containers;
