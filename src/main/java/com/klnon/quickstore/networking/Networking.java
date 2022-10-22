@@ -8,7 +8,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class Networking {
     public static SimpleChannel INSTANCE;
-    public static final String VERSION = "2.1.1";
+    public static final String VERSION = "2.1.2";
     private static int ID = 0;
 
     public static int nextID() {

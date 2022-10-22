@@ -21,16 +21,16 @@ public class StoreConfig_Server {
             BUILDER.push("general");
             distance = BUILDER
                     .comment("距离")
-                    .defineInRange("distance", 1,0,9);
+                    .defineInRange("distance", 2,0,9);
 
 
             searchDistance = BUILDER
                     .comment("搜索距离")
-                    .defineInRange("searchDistance", 2,0,9);
+                    .defineInRange("searchDistance", 3,0,9);
 
             BanItems = BUILDER
                     .comment("全局黑名单:以下物品不会被贮藏,示例 minecraft:stick")
-                    .define("BanItems", "minecraft:stick");
+                    .define("BanItems", "");
 
             slot = BUILDER
                     .comment("玩家背包(36格)中有几格不参与贮藏,默认-1,全部参与贮藏")
