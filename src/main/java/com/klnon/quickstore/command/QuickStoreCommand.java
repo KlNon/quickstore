@@ -101,7 +101,6 @@ public class QuickStoreCommand implements Command<CommandSource> {
                             //如果未储存但该箱子包含该物品
                             if(containerStack.getCount()==containerStack.getMaxStackSize()){
                                 includeItem = true;
-                                continue;
                             }
                             //添加物品
                             int oldCountInContainer = containerStack.getCount();//32
@@ -157,7 +156,6 @@ public class QuickStoreCommand implements Command<CommandSource> {
                         }
                         freeSlotInventory.setInventorySlotContents(freeSlotIndex, inventoryPlayer.getStackInSlot(inventorySlot));
                         inventoryPlayer.setInventorySlotContents(inventorySlot, ItemStack.EMPTY);
-                        playersItemStack.setCount(0);//64-32=32
                         isStored = true;
                     }
 

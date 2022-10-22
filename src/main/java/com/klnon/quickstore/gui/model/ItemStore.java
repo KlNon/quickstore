@@ -1,7 +1,7 @@
 package com.klnon.quickstore.gui.model;
 
 
-import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -26,12 +26,12 @@ public class ItemStore {
         this.storeReference.put(data.getRegName(), uniqueId);
     }
 
-    public void remove(String blockRegistry) {
-        if( !this.storeReference.containsKey(blockRegistry) )
+    public void remove(String itemRegistry) {
+        if( !this.storeReference.containsKey(itemRegistry) )
             return;
 
-        UUID uuid = this.storeReference.get(blockRegistry);
-        this.storeReference.remove(blockRegistry);
+        UUID uuid = this.storeReference.get(itemRegistry);
+        this.storeReference.remove(itemRegistry);
         store.remove(uuid);
     }
 
@@ -51,11 +51,11 @@ public class ItemStore {
         if( uniqueId == null )
             return null;
 
-        ItemData blockData = store.get(uniqueId);
-        if( blockData == null )
+        ItemData itemData = store.get(uniqueId);
+        if( itemData == null )
             return null;
 
-        return new ImmutablePair<>(blockData, uniqueId);
+        return new ImmutablePair<>(itemData, uniqueId);
     }
 
     public void toggleFinder(ItemData data) {
@@ -64,11 +64,11 @@ public class ItemStore {
             return;
 
         // We'd hope this never happens...
-        ItemData blockData = store.get(uniqueId);
-        if( blockData == null )
+        ItemData itemData = store.get(uniqueId);
+        if( itemData == null )
             return;
 
-        blockData.setFinder(!blockData.isFinder());
+        itemData.setFinder(!itemData.isFinder());
     }
 
     public static ArrayList<ItemData> getFromSimpleItemList(List<ItemData.SerializableItemData> simpleList)
@@ -86,15 +86,15 @@ public class ItemStore {
             if( location == null )
                 continue;
 
-            Block block = ForgeRegistries.BLOCKS.getValue(location);
-            if( block == null )
+            Item item = ForgeRegistries.ITEMS.getValue(location);
+            if( item == null )
                 continue;
 
             itemData.add(
                     new ItemData(
                             e.getName(),
                             e.getRegName(),
-                            new ItemStack( block, 1),
+                            new ItemStack( item, 1),
                             e.isFinder(),
                             e.getOrder()
                     )
