@@ -110,7 +110,9 @@ public class QuickStoreCommand implements Command<CommandSource> {
                             int removedCountFromPlayer = newCountInContainer - oldCountInContainer;//64-32=32
                             containerStack.setCount(newCountInContainer);//=64
 
-                            //玩家移除物品
+                            //玩家移除物品之前抢先记录该物品名称
+                            String displayName = playersItemStack.getTextComponent().getString();
+
                             int old_playerCount = playersItemStack.getCount();//64
                             playersItemStack.setCount(playersItemStack.getCount() - removedCountFromPlayer);//64-32=32
 
@@ -125,9 +127,6 @@ public class QuickStoreCommand implements Command<CommandSource> {
 
                             //统计贮藏物品,不统计空气
                             if (StoreConfig_Client.switches.detailInfoEnable.get()) {
-                                if(playersItemStack.isEmpty())
-                                    continue;
-                                String displayName = playersItemStack.getTextComponent().getString();
                                 //如果已经储存的物品名称(Keys)中包括了当前物品名称,并且此次循环成功将玩家物品转移了一些到箱子 .storedItems中包括了储存该物品的箱子的位置与储存总数
                                 if (QuickStore.storedItems.containsKey(displayName) && removedCountFromPlayer > 0) {
                                     ItemInfo itemInfo = QuickStore.storedItems.get(displayName);
@@ -144,6 +143,24 @@ public class QuickStoreCommand implements Command<CommandSource> {
                             }
                         }
                     }
+                    //物品没有被完全储存,且该箱子中有空位,且该箱子包含该物品
+                    if (!itemCompletlyAdded && freeSlotInventory != null && includeItem) {
+                        if (StoreConfig_Client.switches.detailInfoEnable.get() && !playersItemStack.isEmpty()) {
+                            String displayName = playersItemStack.getTextComponent().getString();
+                            if (QuickStore.storedItems.containsKey(displayName) && !isStored) {
+                                ItemInfo itemInfo = QuickStore.storedItems.get(displayName);
+                                itemInfo.setAmount(itemInfo.getAmount() + inventoryPlayer.getStackInSlot(inventorySlot).getCount());
+                                addPos(ci, displayName, itemInfo);
+                            } else if (!isStored){
+                                QuickStore.storedItems.put(displayName, new ItemInfo(addNewPos(ci), inventoryPlayer.getStackInSlot(inventorySlot).getCount()));
+                            }
+                        }
+                        freeSlotInventory.setInventorySlotContents(freeSlotIndex, inventoryPlayer.getStackInSlot(inventorySlot));
+                        inventoryPlayer.setInventorySlotContents(inventorySlot, ItemStack.EMPTY);
+                        playersItemStack.setCount(0);//64-32=32
+                        isStored = true;
+                    }
+
 
 
                     //如果箱子 包含该物品 没有空间 允许显示满了的箱子 箱子确实满了
@@ -151,25 +168,6 @@ public class QuickStoreCommand implements Command<CommandSource> {
                         BlockPos pos = ci.getPos();
                         //player.sendMessage(new TranslationTextComponent("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()), player.getUniqueID());
                         Utils_Server.storedList.add(new RenderBlockProps(pos, StoreConfig_Client.general.RED.get()));
-                    }
-
-
-                    if (!itemCompletlyAdded && freeSlotInventory != null) {
-                        if (StoreConfig_Client.switches.detailInfoEnable.get() && !playersItemStack.isEmpty()) {
-                            String displayName = playersItemStack.getTextComponent().getString();
-                            if (QuickStore.storedItems.containsKey(displayName)) {
-                                ItemInfo itemInfo = QuickStore.storedItems.get(displayName);
-                                itemInfo.setAmount(itemInfo.getAmount() + inventoryPlayer.getStackInSlot(inventorySlot).getCount());
-                                if (!isStored)
-                                    addPos(ci, displayName, itemInfo);
-                            } else {
-                                if (!isStored)
-                                    QuickStore.storedItems.put(displayName, new ItemInfo(addNewPos(ci), inventoryPlayer.getStackInSlot(inventorySlot).getCount()));
-                            }
-                        }
-                        freeSlotInventory.setInventorySlotContents(freeSlotIndex, inventoryPlayer.getStackInSlot(inventorySlot));
-                        inventoryPlayer.setInventorySlotContents(inventorySlot, ItemStack.EMPTY);
-                        isStored = true;
                     }
                 }
             }

@@ -1,13 +1,13 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="runClient" type="Application" factoryName="Application" singleton="false">
     <envs>
-      <env name="MOD_CLASSES" value="quickstore%%$PROJECT_DIR$/../quickstore-1.4\out\production\resources;quickstore%%$PROJECT_DIR$/../quickstore-1.4\out\production\classes" />
+      <env name="MOD_CLASSES" value="quickstore%%$PROJECT_DIR$/../quickstore\out\production\resources;quickstore%%$PROJECT_DIR$/../quickstore\out\production\classes" />
       <env name="MCP_MAPPINGS" value="snapshot_20210309-1.16.5" />
       <env name="MCP_VERSION" value="20210115.111550" />
       <env name="FORGE_VERSION" value="36.2.39" />
       <env name="assetIndex" value="1.16" />
       <env name="assetDirectory" value="D:\File\Other Apps 3\gradle\gradle-7.5.1\caches\forge_gradle\assets" />
-      <env name="nativesDirectory" value="$PROJECT_DIR$/../quickstore-1.4\build\natives" />
+      <env name="nativesDirectory" value="$PROJECT_DIR$/../quickstore\build\natives" />
       <env name="FORGE_GROUP" value="net.minecraftforge" />
       <env name="target" value="fmluserdevclient" />
       <env name="MC_VERSION" value="1.16.5" />
