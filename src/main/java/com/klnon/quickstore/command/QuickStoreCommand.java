@@ -66,6 +66,8 @@ public class QuickStoreCommand implements Command<CommandSource> {
 
                 //遍历附近的箱子
                 for (ContainerInformation ci : containers) {
+                    if(isStored)
+                        continue;
                     boolean includeItem = false;
                     boolean itemCompletlyAdded = false;                    //判断是否有空位或者物品已经添加
                     IInventory freeSlotInventory = null;
@@ -79,9 +81,14 @@ public class QuickStoreCommand implements Command<CommandSource> {
                         continue;
 
                     //获取是否为大箱子还是小箱子
-                    ci.chest.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(handler -> {
-                        inventories[0] = ((InvWrapper)handler).getInv();
-                    });
+                    try{
+                        if(ci.chest!=null)
+                            ci.chest.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(handler -> {
+                                inventories[0] = ((InvWrapper)handler).getInv();
+                            });
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
 
                     //遍历箱子
                     IInventory containerInventory = inventories[0];
@@ -158,7 +165,6 @@ public class QuickStoreCommand implements Command<CommandSource> {
                         inventoryPlayer.setInventorySlotContents(inventorySlot, ItemStack.EMPTY);
                         isStored = true;
                     }
-
 
 
                     //如果箱子 包含该物品 没有空间 允许显示满了的箱子 箱子确实满了
