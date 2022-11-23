@@ -104,7 +104,7 @@ public class QuickStoreCommand implements Command<CommandSource> {
                             freeSlotInventory = containerInventory;
                             freeSlotIndex = containerSlot;
                             //如果箱子里的物品(内循环)和身上物品(外循环)相同
-                        } else if (compareItems(playersItemStack,containerStack) ){
+                        } else if (compareItems(playersItemStack,containerStack) ) {
                             //如果未储存但该箱子包含该物品
                             if(containerStack.getCount()==containerStack.getMaxStackSize()){
                                 includeItem = true;
