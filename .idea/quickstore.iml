@@ -2,9 +2,9 @@
 <module version="4">
   <component name="McpModuleSettings">
     <option name="mappingFile" value="E:\FILE\MC\tools\MyMods\quickstore\build\createMcpToSrg\output.tsrg" />
-    <option name="mcpVersion" value="stable_39-1.12" />
-    <option name="minecraftVersion" value="1.12.2" />
-    <option name="platformVersion" value="14.23.5.2860" />
+    <option name="mcpVersion" value="snapshot_20210309-1.16.5" />
+    <option name="minecraftVersion" value="1.16.5" />
+    <option name="platformVersion" value="36.2.39" />
     <option name="srgType" value="TSRG" />
   </component>
 </module>

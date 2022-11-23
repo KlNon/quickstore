@@ -190,6 +190,7 @@ public class ProxyClient extends Proxy {
                     }
                 }catch (Exception e){
                     QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.wait"));
+                    e.printStackTrace();
                 }
             } else {
                 QuickStore.lostItemsCheckCooldown -= 0.05F;
