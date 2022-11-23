@@ -99,7 +99,7 @@ public class QuickStoreCommand extends CommandBase {
                             }
                         }
                     }
-                    if (freeSlotInventory == null && StoreConfig.fullInfoEnable && !ci.isFull) {
+                    if (freeSlotInventory == null && StoreConfig.fullInfoEnable && !ci.isFull && ci.chest1!= null) {
                         ci.isFull = true;
                         BlockPos pos = ci.chest1.getPos();
                         QuickStore.player.sendMessage(new TextComponentTranslation("commands.quickstore.nospace", pos.getX(), pos.getY(), pos.getZ()));

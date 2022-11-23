@@ -41,7 +41,7 @@ public class StoreConfig {
 
     @Config.Comment("是否显示详细储存信息,true:是,false:否") // 有了这个就会多一个注释。
     @Config.LangKey("config.quickstore.general.detailinfoenable") // 供配置 GUI 界面使用的本地化键，参阅“可视化配置文件编辑界面”一节
-    public static boolean detailInfoEnable = true;
+    public static boolean detailInfoEnable = false;
 
 
     @Config.Comment("是否显示箱子是否满了,true:是,false:否") // 有了这个就会多一个注释。
